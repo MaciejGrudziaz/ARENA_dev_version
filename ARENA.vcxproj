@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{1893D201-CA6D-4799-9325-F94FAD5CC82B}</ProjectGuid>
+    <RootNamespace>ARENA</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\HEADERS;$(ProjectDir)\GENERIC_TEMPLATES;$(ProjectDir)\CLIENT\HEADERS\;$(ProjectDir)\COMMUNICATION_MANAGERS;$(ProjectDir)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\HEADERS;$(ProjectDir)\GENERIC_TEMPLATES;$(ProjectDir)\CLIENT\HEADERS\;$(ProjectDir)\COMMUNICATION_MANAGERS;$(ProjectDir)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ShowIncludes>false</ShowIncludes>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ShowIncludes>false</ShowIncludes>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;dinput8.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="CLIENT\HEADERS\CLIENT_fun.h" />
+    <ClInclude Include="CLIENT\HEADERS\CLIENT_GameObjects.h" />
+    <ClInclude Include="CLIENT\HEADERS\CLIENT_Player.h" />
+    <ClInclude Include="HEADERS\ActionsMODULE.h" />
+    <ClInclude Include="HEADERS\ActionsModuleActions.h" />
+    <ClInclude Include="HEADERS\Bot.h" />
+    <ClInclude Include="HEADERS\BotsActions_TODELETE.h" />
+    <ClInclude Include="HEADERS\BulletCollision.h" />
+    <ClInclude Include="HEADERS\Camera.h" />
+    <ClInclude Include="HEADERS\Character.h" />
+    <ClInclude Include="HEADERS\CharacterRegister.h" />
+    <ClInclude Include="HEADERS\CollisionDetection.h" />
+    <ClInclude Include="HEADERS\ActionsImpl.h" />
+    <ClInclude Include="HEADERS\ConsoleInput.h" />
+    <ClInclude Include="HEADERS\ConsoleInputActions.h" />
+    <ClInclude Include="HEADERS\GameObjects.h" />
+    <ClInclude Include="HEADERS\InputDevImpl.h" />
+    <ClInclude Include="HEADERS\InputDevSignalImpl.h" />
+    <ClInclude Include="HEADERS\InputFunImpl.h" />
+    <ClInclude Include="HEADERS\InputModuleImpl.h" />
+    <ClInclude Include="HEADERS\InputSystemImpl.h" />
+    <ClInclude Include="HEADERS\Manager.h" />
+    <ClInclude Include="HEADERS\CONSOLE.h" />
+    <ClInclude Include="HEADERS\DIRECTINPUT.h" />
+    <ClInclude Include="HEADERS\DynamicCharacter.h" />
+    <ClInclude Include="HEADERS\FONT.h" />
+    <ClInclude Include="HEADERS\GraphicsMODULE.h" />
+    <ClInclude Include="HEADERS\GAMEINPUT.h" />
+    <ClInclude Include="HEADERS\GAMEINPUT_CONSTANTS.h" />
+    <ClInclude Include="HEADERS\GAMElogic.h" />
+    <ClInclude Include="HEADERS\StandardActions.h" />
+    <ClInclude Include="HEADERS\StandardCollision.h" />
+    <ClInclude Include="HEADERS\GamePhysicsStruct.h" />
+    <ClInclude Include="HEADERS\GrudiEngine.h" />
+    <ClInclude Include="HEADERS\GUI.h" />
+    <ClInclude Include="HEADERS\GUICONST.h" />
+    <ClInclude Include="HEADERS\Gun.h" />
+    <ClInclude Include="HEADERS\Light.h" />
+    <ClInclude Include="HEADERS\LOGFILE.h" />
+    <ClInclude Include="HEADERS\Map.h" />
+    <ClInclude Include="HEADERS\Matrix.h" />
+    <ClInclude Include="HEADERS\Model3D.h" />
+    <ClInclude Include="HEADERS\ModulesAdmin.h" />
+    <ClInclude Include="HEADERS\CharacterPhysicsModels.h" />
+    <ClInclude Include="HEADERS\CharacterPhysicsModelsRegister.h" />
+    <ClInclude Include="HEADERS\OBJmodel.h" />
+    <ClInclude Include="HEADERS\PhysicsModelImpl.h" />
+    <ClInclude Include="HEADERS\PhysicsModels.h" />
+    <ClInclude Include="HEADERS\PhysicsMODULE.h" />
+    <ClInclude Include="HEADERS\PhysicsModuleConst.h" />
+    <ClInclude Include="HEADERS\PlayerInput.h" />
+    <ClInclude Include="HEADERS\PlayerSignal.h" />
+    <ClInclude Include="HEADERS\Quaternion.h" />
+    <ClInclude Include="HEADERS\SpecialMath.h" />
+    <ClInclude Include="HEADERS\TIMER.h" />
+    <ClInclude Include="HEADERS\Vector.h" />
+    <ClInclude Include="HEADERS\Weapon.h" />
+    <ClInclude Include="HEADERS\WeaponDatabase.h" />
+    <ClInclude Include="HEADERS\WinAPIheaders.h" />
+    <ClInclude Include="HEADERS\WinAPImessages.h" />
+    <ClInclude Include="HEADERS\WinAPIwindow.h" />
+    <ClInclude Include="HEADERS\WINAPI_INPUT.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CLIENT\SRC\CLIENT_fun.cpp" />
+    <ClCompile Include="CLIENT\SRC\CLIENT_main.cpp" />
+    <ClCompile Include="CLIENT\SRC\CLIENT_GameObjects.cpp" />
+    <ClCompile Include="CLIENT\SRC\CLIENT_Player.cpp" />
+    <ClCompile Include="SRC\ActionsImpl.cpp" />
+    <ClCompile Include="SRC\ActionsMODULE.cpp" />
+    <ClCompile Include="SRC\Bot.cpp" />
+    <ClCompile Include="SRC\BotsActions_TODELETE.cpp" />
+    <ClCompile Include="SRC\BulletCollision.cpp" />
+    <ClCompile Include="SRC\Camera.cpp" />
+    <ClCompile Include="SRC\Character.cpp" />
+    <ClCompile Include="SRC\CharacterRegister.cpp" />
+    <ClCompile Include="SRC\CollisionDetection.cpp" />
+    <ClCompile Include="SRC\CONSOLE.cpp" />
+    <ClCompile Include="SRC\ConsoleInput.cpp" />
+    <ClCompile Include="SRC\DIRECTINPUT.cpp" />
+    <ClCompile Include="SRC\DynamicCharacter.cpp" />
+    <ClCompile Include="SRC\FONT.cpp" />
+    <ClCompile Include="SRC\GraphicsMODULE.cpp" />
+    <ClCompile Include="SRC\GAMEINPUT.cpp" />
+    <ClCompile Include="SRC\GAMElogic.cpp" />
+    <ClCompile Include="SRC\InputDevImpl.cpp" />
+    <ClCompile Include="SRC\InputSystemImpl.cpp" />
+    <ClCompile Include="SRC\StandardCollision.cpp" />
+    <ClCompile Include="SRC\GUI.cpp" />
+    <ClCompile Include="SRC\Gun.cpp" />
+    <ClCompile Include="SRC\Light.cpp" />
+    <ClCompile Include="SRC\LOGFILE.cpp" />
+    <ClCompile Include="SRC\Map.cpp" />
+    <ClCompile Include="SRC\Matrix.cpp" />
+    <ClCompile Include="SRC\ModulesAdmin.cpp" />
+    <ClCompile Include="SRC\CharacterPhysicsModels.cpp" />
+    <ClCompile Include="SRC\CharacterPhysicsModelsRegister.cpp" />
+    <ClCompile Include="SRC\OBJmodel.cpp" />
+    <ClCompile Include="SRC\PhysicsMODULE.cpp" />
+    <ClCompile Include="SRC\PlayerInput.cpp" />
+    <ClCompile Include="SRC\Quaternion.cpp" />
+    <ClCompile Include="SRC\SpecialMath.cpp" />
+    <ClCompile Include="SRC\TIMER.cpp" />
+    <ClCompile Include="SRC\Vector.cpp" />
+    <ClCompile Include="SRC\WeaponDatabase.cpp" />
+    <ClCompile Include="SRC\WinAPImessages.cpp" />
+    <ClCompile Include="SRC\WinAPIwindow.cpp" />
+    <ClCompile Include="SRC\WINAPI_INPUT.cpp" />
+    <ClCompile Include="SRC\WinMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="RESOURCES\WeaponDatabase.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
