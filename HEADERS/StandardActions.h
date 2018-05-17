@@ -83,125 +83,6 @@ struct SetNextPositionAction :public ActionImpl {
 	}
 };
 
-/*struct FallAction :public ActionImpl {
-	DynamicCharacter* character;
-	bool enable;
-	bool jump;
-	double time;
-	double frameTime;
-	double G_val;
-	Vector position;
-	Vector shift;
-	FallAction(DynamicCharacter* character_):character(character_), frameTime(PHYSICSCONST::targetFrameTime/1000000.0), G_val(PHYSICSCONST::G), enable(false), jump(false), ActionImpl("Fall") {}
-	void Init(const Vector& position_, const Vector& shift_) {
-		enable = true;
-		jump = false;
-		time = 0.0;
-		shift = shift_;
-		if (character->GetLastCol().standardCol.collisionOccured) {
-			shift.x = 0.0;
-			shift.z = 0.0;
-		}	
-		position = position_;
-	}
-	void operator()() {
-		if (!enable && !jump) Init(character->getPosition(), character->getPosition() - character->GetPreviousPosition());
-		
-		if (character->GetLastCol().standardCol.collisionOccured) {
-			shift.x = 0.0;
-			shift.z = 0.0;
-		}
-		time += frameTime;
-		Vector nextPos = character->GetNextPosition();
-		if (character->GetLastColSize() == 0 || !character->GetLastCol().standardCol.collisionOccured) {
-			nextPos.x += shift.x / 1.33;
-			nextPos.z += shift.z / 1.33;
-		}
-		
-		double val1 = shift.y*time;
-		double val2 = 0.5*G_val*(time*time)*character->GetWeight();
-
-		if (val2 > val1) jump = false;
-
-		nextPos.y = position.y + val1 - val2;
-		character->SetNextPosition(nextPos);
-	}
-};
-
-struct JumpAction :public ActionImpl {
-	DynamicCharacter* character;
-	FallAction* fall;
-	JumpAction(DynamicCharacter* character_,ActionImpl* fall_) :character(character_), ActionImpl("Jump") {
-		fall = static_cast<FallAction*>(fall_);
-	}
-	void operator()() {
-		if (!fall->enable) {
-			fall->Init(character->getPosition(), character->getPosition() - character->GetPreviousPosition());
-			fall->shift.y = character->GetJumpStrength();
-			fall->jump = true;
-		}
-	}
-};*/
-
-/*struct JumpAction:public ActionImpl {
-	bool enable;
-	bool terminate;
-	Vector position;
-	Vector shift;
-	Vector size;
-	double time;
-	double frameTime;
-	double G_val;
-	double yMapVal;
-	DynamicCharacter* character;
-
-	JumpAction(DynamicCharacter* character_) :character(character_), enable(false), terminate(false), time(0.0), ActionImpl("Jump") {
-		size = character->getCollisionBox().size;
-	}
-	void Init(const Vector& position_, const Vector& shift_, double jumpStrength) {
-		enable = true;
-		position = position_;
-		shift = shift_;
-		shift.y = jumpStrength;
-		time = 0.0;
-		frameTime = PHYSICSCONST::targetFrameTime / 1000000.0;
-		G_val = PHYSICSCONST::G;
-	}
-	void Set_yMapVal(double yMapVal_) { yMapVal = yMapVal_; }
-	void End() {
-		Vector charPos = character->getPosition();
-		if ((charPos.y - position.y) > 0.05*size.y || charPos.y < position.y) {
-			enable = false;
-			terminate = true;
-			time = 0.0;
-			Vector nextPos = character->GetNextPosition();
-			nextPos.y = yMapVal;
-			character->SetNextPosition(nextPos);
-		}
-		else operator()();
-	}
-
-	void operator()() {
-		if (!terminate) {
-			if (!enable)
-				Init(character->getPosition(), character->getPosition() - character->GetPreviousPosition(), character->GetJumpStrength());
-
-			time += frameTime;
-			Vector pos = character->GetNextPosition();
-
-			pos.x += shift.x / 1.33;
-			pos.z += shift.z / 1.33;
-
-			double val1 = shift.y*time;
-			double val2 = 0.5*G_val*(time*time)*character->GetWeight();
-
-			pos.y = position.y + val1 - val2;
-			character->SetNextPosition(pos);
-		}
-		else terminate = false;
-	}
-};*/
-
 struct AirAction :public ActionImpl {
 	bool enable;
 	Vector position;
@@ -453,5 +334,23 @@ struct ForceFallAction :public ActionImpl {
 	void operator()() {
 		if(air->enable && air->character->getPosition().y > air->character->GetPreviousPosition().y)
 			air->Fall();
+	}
+};
+
+struct CameraForward: public ActionImpl {
+	Camera* camera;
+	double speed;
+	double t;
+	CameraForward(Camera* camera_):camera(camera_) {
+		t= PHYSICSCONST::targetFrameTime / 1000000.0;
+	}
+
+	void operator()() {
+		double s = 10.0*t;
+		double Yangle = camera->GetOrientation().y / 360.0*2.0*3.1415;
+		Vector nextPos = camera->GetPosition();
+		nextPos.x -= s*sin(-Yangle);
+		nextPos.z += s*cos(-Yangle);
+		camera->SetPosition(nextPos);
 	}
 };

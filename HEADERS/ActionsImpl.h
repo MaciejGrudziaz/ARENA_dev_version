@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObjects.h"
+#include "Camera.h"
 #include <map>
 
 struct ActionImpl{

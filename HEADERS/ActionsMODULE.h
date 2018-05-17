@@ -39,7 +39,6 @@ public:
 	}
 
 	static void RegisterInputSignal(InputSignalImpl* inputSignal, InputFunImpl* inputFun, PlayerSignalImpl* playerSignal) {
-		//signals.insert(PlayerSignalMap::value_type(*inputSignal, InputSignalPair(inputFun, playerSignal)));
 		signals.push_back(InputSignalVec::value_type(inputSignal, inputFun, playerSignal));
 	}
 

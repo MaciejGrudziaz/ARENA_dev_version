@@ -62,9 +62,71 @@ void Camera::Initialize(double xPos, double yPos, double zPos, double xCen, doub
 	mode = mode_;
 }
 
+void Camera::Update() {
+	assert(!(mode == BOUND && character == nullptr));
+
+	UpdateCameraPosition();
+	UpdateCameraOrientation();
+}
+
 //ustawienie kamery w scenie OpenGL
 void Camera::SetCamera()
 {
 	//funkcja ustwaij¹ca kamerê z biblioteki GLU
 	gluLookAt(position.x, position.y, position.z, center.x, center.y, center.z, upvector.x, upvector.y, upvector.z);
+}
+
+//ustawienie kamery z perspektywy gracza
+void Camera::SetFirstPerson() {
+	Vector size = character->getCollisionBox().size;
+	relativePos = { 0.0,0.8*size.y,0.25 };
+}
+
+//ustawienie kamery zza pleców gracza
+void Camera::SetThirdPerson() {
+	relativePos = { 0.0,5.0,-8.0 };
+}
+
+void Camera::UpdateCameraPosition() {
+	if (mode == BOUND) {
+		if (character->IsEnabled()) {
+			Vector charPos= character->getPosition();			//pobranie pozycji postaci
+			Vector charOrient= character->getOrientation();		//pobranie orienatcji postaci
+
+			double angle = charOrient.y / 360.0 * 2.0 * 3.1415;				//k¹t obrotu postaci wokó³ osi y [w radianach; 2.0 * 3.1415 -> 2 * PI]
+			charPos.x -= relativePos.z*sin(-angle);							//wartoœæ pozycji kamery w osi x w stosunku do pozycji postaci
+			charPos.y += relativePos.y;										//wartoœæ pozycji kamery w osi y w stosunku do pozycji postaci
+			charPos.z += relativePos.z*cos(-angle);							//wartoœæ pozycji kamery w osi z w stosunku do pozycji postaci
+
+			position = charPos;
+		}
+	}
+}
+
+void Camera::UpdateCameraOrientation() {
+	if (mode == BOUND) {
+		if (character->IsEnabled()) {
+			Vector characterOrient = character->getOrientation();
+			orientation.y = characterOrient.y;
+			orientation.x = character->GetLookAngle();
+
+			//przeliczenie orientacji kamery na radiany
+			orientation.x = orientation.x / 360.0 * 2.0 *3.1415;
+			orientation.y = orientation.y / 360.0 * 2.0 *3.1415;
+			orientation.z = orientation.z / 360.0 * 2.0 *3.1415;
+
+			//wyliczenie wspó³rzêdnych punktu 'wycentrowania' kamery ze wzoru:
+			//y = R * sin( -orientation.x ), x = r * sin( orientation.y ), z = r * cos( orientation.y )
+			//gdzie: R - odleg³oœæ od œrodka kamery do punktu 'wycentrowania', r - rzutowanie odleg³oœci R na p³aszczyznê (X,Z), obliczona zgodnie ze wzorem: r = sqrt( R^2 + y^2 )
+			double R = sqrt((-relativePos.z + relativeCenter.z)*(-relativePos.z + relativeCenter.z) + relativePos.y*relativePos.y);
+
+			center.y = R*sin(-orientation.x);
+
+			double r = sqrt(R*R + center.y*center.y);
+
+			center.x = position.x + r*sin(orientation.y);
+			center.y = position.y - center.y;
+			center.z = position.z + r*cos(orientation.y);
+		}
+	}
 }

@@ -24,11 +24,9 @@ class GraphicsMODULE {
 
 	static void DrawBots();
 
-	static void SetCameraPosition();								//ustalenie odpowiedniej pozycji
+	static void UpdateCameras();									//aktualizacja kamery
 
-	static void SetCameraOrientation();								//ustalenie odpowiedniej orientacji kamery
-
-	static void SetCamera();										//wszystkie ustawienia kamery
+	static void SetCamera();										//ustawienie g³ównej kamery
 
 	static void ShowConsoleOutput();								//wyœwietlenie danych wyjœciowych z 'konsoli'
 
@@ -36,12 +34,23 @@ class GraphicsMODULE {
 
 	static std::vector<Light*> lights;
 	static std::vector<std::pair<GLenum,GLenum> > materials;
+	static std::vector<Camera*> cameras;
+	static Camera* mainCamera;
+
+	typedef std::map<Camera*, Actions*> CamerasActionsMap;
+	static CamerasActionsMap camerasActions;
 public:
 
 	static void ProccessGraphics();									//przetwarzanie grafiki
 
 	static void RegisterLight(Light& light) { lights.push_back(&light); }
-	static void RegisterMatrial(GLenum face_, GLenum material_) { materials.push_back(std::pair<GLenum,GLenum>(face_,material_)); }
+	static void RegisterMaterial(GLenum face_, GLenum material_) { materials.push_back(std::pair<GLenum,GLenum>(face_,material_)); }
+	static void RegisterCamera(Camera& camera_);
+	static void SetMainCamera(unsigned idx);
+	static Camera* GetMainCamera() { return mainCamera; }
+	static Camera* GetCamera(unsigned idx);
+	static Actions* GetCameraActionsModule(unsigned idx);
+	static Actions* GetMainCameraActionsModule();
 	static void InitializeLights();
 	static void InitializeMaterials();
 };

@@ -3,7 +3,7 @@
 #include <queue>
 #include "Character.h"
 #include "TIMER.h"
-#include "Camera.h"
+//#include "Camera.h"
 #include "LOGFILE.h"
 #include "PhysicsModuleConst.h"
 #include "GamePhysicsStruct.h"
