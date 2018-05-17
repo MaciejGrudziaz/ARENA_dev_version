@@ -2,13 +2,15 @@
 
 //konstruktor pobieraj¹cy jedynie nazwê pliku przechowuj¹cego model postaci [reszcie parametrów przypisuje siê wartoœci domyœlne]
 Player::Player(const std::string& filename) : DynamicCharacter(filename) {									//wywo³anie odpowiedniego konstruktora klasy Character
-	lookAngle = Camera::GetOrientation().x;
+	//lookAngle = Camera::GetOrientation().x;
+	lookAngle = 0.0;
 }
 
 //konstruktor pobieraj¹cy nazwê pliku, nazwê, pozycjê oraz orientacjê postaci
 Player::Player(const std::string& filename, const std::string& Name, const Vector& Position, const Vector& Orientation) :
 	DynamicCharacter(filename, Name, Position, Orientation) {									//wywo³anie odpwiedniego konstrukotra klasy DynamicCharacter
-	lookAngle = Camera::GetOrientation().x;
+	//lookAngle = Camera::GetOrientation().x;
+	lookAngle = 0.0;
 }
 
 //dodanie broni dla postaci

@@ -32,7 +32,7 @@ void InitializeLights() {
 
 //inicjalizacja materia³ów [funkcja testowa]
 void InitializeMaterials() {
-	GraphicsMODULE::RegisterMatrial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	GraphicsMODULE::RegisterMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 }
 
 //inicjalizacja postaci gracza [klasa Player]
@@ -138,30 +138,15 @@ void InitializeMaps() {
 
 //inicjalizacja kamery w œwiecie gry
 void InitializeCamera() {
-	Camera::Initialize(0.0, 0.0, 0.0, 0.0, 0.0, -100.0, 0.0, 1.0, 0.0);			//inicjalizacja kamery
-	Camera::SetRelativePosition(0.0, 5.0, -8.0);								//ustawienie pozycji kamery wzglêdem gracza
-	//Vector size = (GameObjects::players[0]->getCollisionBox().maxPoint - GameObjects::players[0]->getCollisionBox().midPoint) * 2.0;
-	//Camera::SetRelativePosition(0.0, 0.8*size.y, 0.25);
-	Camera::SetRelativeCenter(0.0, 0.0, 32.0);									//ustawienie pozycji punktu w kirunku którym 'patrzy' kamera wzglêdem gracza
+	Camera* camera = new Camera(0.0, 0.0, 0.0, 0.0, 0.0, -100.0, 0.0, 1.0, 0.0, Camera::Mode::BOUND);
 
-	Vector orientation(0.0, 0.0, 0.0);
-	for (unsigned int i = 0; i < GameObjects::players.size(); i++) {			//przesukiwanie wektora obiektów postaci gracza
-		if (GameObjects::players[i]->IsEnabled()) {								//sprawdzenie czy postaæ jest 'odblokowana'
-			Vector playerOrientation = GameObjects::players[i]->getOrientation();//jeœli tak to pobierz orientacjê postaci
-			orientation.y = playerOrientation.y;								//przypisanie kamerze orientacji wokó³ osi Y, takiej samej jak orientacja postaci gracza
-			break;
-		}
-	}
+	camera->SetRelativeCenter(0.0, 0.0, 32.0);									//ustawienie pozycji punktu w kirunku którym 'patrzy' kamera wzglêdem gracza
 
-	Vector relativePos = Camera::GetRelativePosition();							//pobranie pozycji relatywnej kamery
-	Vector relativeCenter = Camera::GetRelativeCenter();						//pobranie pozycji relatywnej punktu 'wycentrowania' kamery
+	camera->InitializeCharacter(*(CharacterRegister::GetPlayer()));
 
-																				//wyliczenie orientacji kamery wokó³ osi X ze wzoru:
-																				//orientation.x = atan ( relativePos.y / ( -relativePos.z + relativeCenter.z ) )
-																				//oraz przeliczenie jej z radianów na stopnie
-	orientation.x = atan2(relativePos.y, -relativePos.z + relativeCenter.z) * 180.0 / 3.1415;
+	camera->SetThirdPerson();
 
-	Camera::SetOrientation(orientation.x, orientation.y, orientation.z);		//ustawienie orientacji kamery
+	GraphicsMODULE::RegisterCamera(*camera);
 }
 
 //dodanie nowego bota
@@ -183,11 +168,6 @@ void AddNewBot(const Vector& position, const Vector& orientation) {
 }
 
 void InitializePlayerInput() {
-	//ActionsMODULE::RegisterInputModule(new PlayerInput("PlayerInput"));
-	//ActionsMODULE::SetCurrentInputModule("PlayerInput");
-
-	
-
 	GAMEINPUT::RegisterStandardInput();
 
 	Player* player = GameObjects::players[0];
@@ -209,10 +189,6 @@ void InitializePlayerInput() {
 	CharacterRegister::GetPlayerActionsModule()->RegisterAction(new HalfSpeedAction(player));
 	CharacterRegister::GetPlayerActionsModule()->RegisterAction(new FullSpeedAction(player));
 	CharacterRegister::GetPlayerActionsModule()->RegisterAction(new ForceFallAction(CharacterRegister::GetPlayerActionsModule()->Get("Air")));
-
-	/*PlayerInput::Register(new KeyboardInputSignal(KeyboardInputSignal::Code::W),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(),&KeyboardImpl::KeyDown),
-		new PlayerSignalHandler<StandardActions>(&StandardActions::Forward,static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player))));*/
 
 	PlayerInput* input = static_cast<PlayerInput*>(ActionsMODULE::GetInputModule("PlayerInput"));
 
@@ -276,58 +252,6 @@ void InitializePlayerInput() {
 	input->Register(new KeyboardInputSignal(KeyboardInputSignal::Code::A, KeyboardInputSignal::Code::D),
 		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyUpCombo),
 		new PlayerSignalHandler(CharacterRegister::GetPlayerActionsModule(), "FullSpeed"));
-
-	/*PlayerInput::Register(new KeyboardInputSignal(KeyboardInputSignal::Code::S),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler<StandardActions>(&StandardActions::Backward, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player))));
-
-	PlayerInput::Register(new KeyboardInputSignal(KeyboardInputSignal::Code::A),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler<StandardActions>(&StandardActions::Left, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player))));
-
-	PlayerInput::Register(new KeyboardInputSignal(KeyboardInputSignal::Code::D),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler<StandardActions>(&StandardActions::Right, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player))));
-
-	PlayerInput::Register(new MouseInputSignal(MouseInputSignal::Code::MOUSE_LEFT),
-		new InputFunHandler<MouseImpl>(GAMEINPUT::GetMouse(), &MouseImpl::GetMouseMove),
-		new PlayerSignalHandler<StandardActions,TYPELIST_1(int)>(&StandardActions::LookLeft, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player)),&GAMEINPUT::GetMouse()->mouseMove.x));
-
-	PlayerInput::Register(new MouseInputSignal(MouseInputSignal::Code::MOUSE_RIGHT),
-		new InputFunHandler<MouseImpl>(GAMEINPUT::GetMouse(), &MouseImpl::GetMouseMove),
-		new PlayerSignalHandler<StandardActions, TYPELIST_1(int)>(&StandardActions::LookRight, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player)), &GAMEINPUT::GetMouse()->mouseMove.x));
-
-
-
-	PlayerInput::Register(new KeyboardInputSignal(KeyboardInputSignal::Code::W, KeyboardInputSignal::Code::A),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDownCombo),
-		new PlayerSignalHandler < StandardActions, TYPELIST_1(double) > (&StandardActions::SetSpeed, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player)),
-		&(static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player))->halfSpeed)));
-
-	PlayerInput::Register(new KeyboardInputSignal(KeyboardInputSignal::Code::W, KeyboardInputSignal::Code::D),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDownCombo),
-		new PlayerSignalHandler < StandardActions, TYPELIST_1(double) >(&StandardActions::SetSpeed, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player)),
-			&(static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player))->halfSpeed)));
-
-	PlayerInput::Register(new KeyboardInputSignal(KeyboardInputSignal::Code::S, KeyboardInputSignal::Code::A),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDownCombo),
-		new PlayerSignalHandler < StandardActions, TYPELIST_1(double) >(&StandardActions::SetSpeed, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player)),
-			&(static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player))->halfSpeed)));
-
-	PlayerInput::Register(new KeyboardInputSignal(KeyboardInputSignal::Code::S, KeyboardInputSignal::Code::D),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDownCombo),
-		new PlayerSignalHandler < StandardActions, TYPELIST_1(double) >(&StandardActions::SetSpeed, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player)),
-			&(static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player))->halfSpeed)));
-
-	PlayerInput::Register(new KeyboardInputSignal(KeyboardInputSignal::Code::W, KeyboardInputSignal::Code::S),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyUpCombo),
-		new PlayerSignalHandler < StandardActions, TYPELIST_1(double) >(&StandardActions::SetSpeed, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player)),
-			&(static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player))->fullSpeed)));
-
-	PlayerInput::Register(new KeyboardInputSignal(KeyboardInputSignal::Code::A, KeyboardInputSignal::Code::D),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyUpCombo),
-		new PlayerSignalHandler < StandardActions, TYPELIST_1(double) >(&StandardActions::SetSpeed, static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player)),
-			&(static_cast<StandardActions*>(ActionsModulesRegister::GetModule(player))->fullSpeed)));*/
 }
 
 void InitializeConsoleInput() {
