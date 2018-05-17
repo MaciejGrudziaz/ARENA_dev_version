@@ -11,6 +11,8 @@ class ActionsMODULE {
 	typedef std::map<std::string, InputModuleImpl*> InputModulesMap;
 	static InputModulesMap inputModules;
 	static InputModuleImpl* currentInputModule;
+	static std::string currentInputModuleName;
+	static std::string lastInputModuleName;
 
 	//typedef std::pair<InputFunImpl*, PlayerSignalImpl* > InputSignalPair;
 	//typedef std::map<InputSignalImpl*, InputSignalPair> PlayerSignalMap;
@@ -25,6 +27,8 @@ public:
 	}
 
 	static void SetCurrentInputModule(std::string moduleName) {
+		lastInputModuleName = currentInputModuleName;
+		currentInputModuleName = moduleName;
 		InputModulesMap::iterator it = inputModules.find(moduleName);
 		if (it != inputModules.end())
 			currentInputModule = (*it).second;
@@ -43,6 +47,10 @@ public:
 	}
 
 	static Actions* GetActionsModule() { return &actions; }
+
+	static std::string GetCurrentInputModuleName() { return currentInputModuleName; }
+
+	static std::string GetLastInputModuleName() { return lastInputModuleName; }
 
 	static void Process();
 };

@@ -12,6 +12,8 @@ void GAMElogic::InitializeGameLogic() {
 	InitilizeTimers();															//inicjalizacja timerów
 	InitilizeLogFiles();														//inicjalziacja plików logów
 	InitializeOpenGLProperties();												//inicjalziacja podstawowych w³aœciwoœci okna OpenGL
+		//InitializeLights();															//inicjalizacja Ÿróde³ œwiat³a
+		//InitializeMaterials();														//inicjalziacja materia³ów
 	GraphicsMODULE::InitializeLights();		
 	GraphicsMODULE::InitializeMaterials();
 	WeaponDatabase::Initialize();												//inicjalizacja bazy danych broni
@@ -30,7 +32,7 @@ void GAMElogic::RefreshGameLogicInitialization() {
 
 	GraphicsMODULE::InitializeLights();
 	GraphicsMODULE::InitializeMaterials();
-												
+
 	CONSOLE::Initialize();														//inicjalizacja 'konsoli' gry
 	GUI::Initialize();
 }

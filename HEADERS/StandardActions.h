@@ -13,7 +13,7 @@ struct LookUpAction :public ActionImpl {
 																										//t/1000000.0 - czas trwania poprzedniej klatki w sek., turnSensitivity - czu³oœæ obrotu postaci
 		double lookAngle = character->GetLookAngle();
 		lookAngle -= xRot;
-		if (lookAngle < -90.0) lookAngle = -90.0;
+		if (lookAngle > 90.0) lookAngle = 90.0;
 		character->SetLookAngle(lookAngle);
 	}
 };
@@ -30,7 +30,7 @@ struct LookDownAction :public ActionImpl {
 																												//t/1000000.0 - czas trwania poprzedniej klatki w sek., turnSensitivity - czu³oœæ obrotu postaci
 		double lookAngle = character->GetLookAngle();
 		lookAngle -= xRot;
-		if (lookAngle > 90) lookAngle = 90.0;
+		if (lookAngle < -90) lookAngle = -90.0;
 		character->SetLookAngle(lookAngle);
 	}
 };
@@ -337,20 +337,204 @@ struct ForceFallAction :public ActionImpl {
 	}
 };
 
-struct CameraForward: public ActionImpl {
+struct CameraForwardAction: public ActionImpl {
 	Camera* camera;
 	double speed;
 	double t;
-	CameraForward(Camera* camera_):camera(camera_) {
+	CameraForwardAction(Camera* camera_):camera(camera_),ActionImpl("CameraForward") {
 		t= PHYSICSCONST::targetFrameTime / 1000000.0;
+		speed = camera->GetSpeed();
 	}
 
 	void operator()() {
-		double s = 10.0*t;
-		double Yangle = camera->GetOrientation().y / 360.0*2.0*3.1415;
+		double s = speed*t;
+		double Yangle = camera->GetOrientation().y;
 		Vector nextPos = camera->GetPosition();
+
 		nextPos.x -= s*sin(-Yangle);
 		nextPos.z += s*cos(-Yangle);
+
 		camera->SetPosition(nextPos);
+	}
+};
+
+struct CameraBackwardAction : public ActionImpl {
+	Camera* camera;
+	double speed;
+	double t;
+	CameraBackwardAction(Camera* camera_) :camera(camera_), ActionImpl("CameraBackward") {
+		t = PHYSICSCONST::targetFrameTime / 1000000.0;
+		speed = camera->GetSpeed();
+	}
+
+	void operator()() {
+		double s = speed*t;
+		double Yangle = camera->GetOrientation().y;
+		Vector nextPos = camera->GetPosition();
+
+		nextPos.x += s*sin(-Yangle);
+		nextPos.z -= s*cos(-Yangle);
+
+		camera->SetPosition(nextPos);
+	}
+};
+
+struct CameraLeftAction : public ActionImpl {
+	Camera* camera;
+	double speed;
+	double t;
+	CameraLeftAction(Camera* camera_) :camera(camera_), ActionImpl("CameraLeft") {
+		t = PHYSICSCONST::targetFrameTime / 1000000.0;
+		speed = camera->GetSpeed();
+	}
+
+	void operator()() {
+		double s = camera->GetSpeed()*t;																	//s - wartoœæ przemieszczenia, speed - prêdkoœæ postaci, t/1000000.0 - czas trwania poprzedniej klatki w sek.
+		double Yangle = camera->GetOrientation().y;
+		Vector nextPos = camera->GetPosition();
+		nextPos.x += s*cos(-Yangle);
+		nextPos.z += s*sin(-Yangle);
+		
+		camera->SetPosition(nextPos);
+	}
+};
+
+struct CameraRightAction : public ActionImpl {
+	Camera* camera;
+	double speed;
+	double t;
+	CameraRightAction(Camera* camera_) :camera(camera_), ActionImpl("CameraRight") {
+		t = PHYSICSCONST::targetFrameTime / 1000000.0;
+		speed = camera->GetSpeed();
+	}
+
+	void operator()() {
+		double s = camera->GetSpeed()*t;																	//s - wartoœæ przemieszczenia, speed - prêdkoœæ postaci, t/1000000.0 - czas trwania poprzedniej klatki w sek.
+		double Yangle = camera->GetOrientation().y;
+		Vector nextPos = camera->GetPosition();
+		nextPos.x -= s*cos(-Yangle);
+		nextPos.z -= s*sin(-Yangle);
+
+		camera->SetPosition(nextPos);
+	}
+};
+
+struct CameraUpAction : public ActionImpl {
+	Camera* camera;
+	double speed;
+	double t;
+	CameraUpAction(Camera* camera_) :camera(camera_), ActionImpl("CameraUp") {
+		t = PHYSICSCONST::targetFrameTime / 1000000.0;
+		speed = camera->GetSpeed();
+	}
+
+	void operator()() {
+		double s = speed*t;
+		Vector nextPos = camera->GetPosition();
+
+		nextPos.y += s;
+
+		camera->SetPosition(nextPos);
+	}
+};
+
+struct CameraDownAction : public ActionImpl {
+	Camera* camera;
+	double speed;
+	double t;
+	CameraDownAction(Camera* camera_) :camera(camera_), ActionImpl("CameraDown") {
+		t = PHYSICSCONST::targetFrameTime / 1000000.0;
+		speed = camera->GetSpeed();
+	}
+
+	void operator()() {
+		double s = speed*t;
+		Vector nextPos = camera->GetPosition();
+
+		nextPos.y -= s;
+
+		camera->SetPosition(nextPos);
+	}
+};
+
+struct CameraLookUp :public ActionImpl {
+	Camera* camera;
+	double speed;
+	double t;
+	int* mouseMove;
+	CameraLookUp(Camera* camera_,int* mouseMoveBuf) :camera(camera_), mouseMove(mouseMoveBuf), ActionImpl("CameraLookUp") {
+		t = PHYSICSCONST::targetFrameTime / 1000000.0;
+		speed = camera->GetSpeed();
+	}
+
+	void operator()() {
+		double xRot = (*mouseMove) * t * camera->GetTurnSensitivity()*2.0*3.1415;						//xRot - k¹t obrotu w osi X, Action.param[0] - wartoœæ przemieszczenia myszy w poprzedniej klatce w osi Y
+																										//t/1000000.0 - czas trwania poprzedniej klatki w sek., turnSensitivity - czu³oœæ obrotu postaci
+		Vector camOrient = camera->GetOrientation();
+		camOrient.x -= xRot;
+		if (camOrient.x > 1.57) camOrient.x = 1.57;
+		camera->SetOrientation(camOrient);
+	}
+};
+
+struct CameraLookDown :public ActionImpl {
+	Camera* camera;
+	double speed;
+	double t;
+	int* mouseMove;
+	CameraLookDown(Camera* camera_, int* mouseMoveBuf) :camera(camera_), mouseMove(mouseMoveBuf), ActionImpl("CameraLookDown") {
+		t = PHYSICSCONST::targetFrameTime / 1000000.0;
+		speed = camera->GetSpeed();
+	}
+
+	void operator()() {
+		double xRot = (*mouseMove) * t * camera->GetTurnSensitivity()*2.0*3.1415;						//xRot - k¹t obrotu w osi X, Action.param[0] - wartoœæ przemieszczenia myszy w poprzedniej klatce w osi Y
+																							//t/1000000.0 - czas trwania poprzedniej klatki w sek., turnSensitivity - czu³oœæ obrotu postaci
+		Vector camOrient = camera->GetOrientation();
+		camOrient.x -= xRot;
+		if (camOrient.x < -1.57) camOrient.x = -1.57;
+		camera->SetOrientation(camOrient);
+	}
+};
+
+struct CameraLookLeft :public ActionImpl {
+	Camera* camera;
+	double speed;
+	double t;
+	int* mouseMove;
+	CameraLookLeft(Camera* camera_, int* mouseMoveBuf) :camera(camera_), mouseMove(mouseMoveBuf), ActionImpl("CameraLookLeft") {
+		t = PHYSICSCONST::targetFrameTime / 1000000.0;
+		speed = camera->GetSpeed();
+	}
+
+	void operator()() {
+		Vector camOrient = camera->GetOrientation();
+		double yRot = (*mouseMove) * t * camera->GetTurnSensitivity()*2.0*3.1415;							//yRot - k¹t obrotu, Action.param[0] - wartoœæ przemieszczenia myszy w poprzedniej klatce
+																								//t/1000000.0 - czas trwania poprzedniej klatki w sek., turnSensitivity - czu³oœæ obrotu postaci
+		camOrient.y -= yRot;																//ustawienie nowej wartoœci orientacji postaci gracza w osi Y
+		if (camOrient.y >6.28)																//sprawdzenie czy wartoœæ orientacji przekroczy³a zakres
+			camOrient.y = 0;
+		camera->SetOrientation(camOrient);
+	}
+};
+
+struct CameraLookRight :public ActionImpl {
+	Camera* camera;
+	double speed;
+	double t;
+	int* mouseMove;
+	CameraLookRight(Camera* camera_, int* mouseMoveBuf) :camera(camera_), mouseMove(mouseMoveBuf), ActionImpl("CameraLookRight") {
+		t = PHYSICSCONST::targetFrameTime / 1000000.0;
+		speed = camera->GetSpeed();
+	}
+
+	void operator()() {
+		Vector camOrient = camera->GetOrientation();
+		double yRot = (*mouseMove) * t * camera->GetTurnSensitivity()*2.0*3.1415;							//yRot - k¹t obrotu, Action.param[0] - wartoœæ przemieszczenia myszy w poprzedniej klatce
+																											//t/1000000.0 - czas trwania poprzedniej klatki w sek., turnSensitivity - czu³oœæ obrotu postaci
+		camOrient.y -= yRot;																//ustawienie nowej wartoœci orientacji postaci gracza w osi Y
+		if (camOrient.y < 0)																//sprawdzenie czy wartoœæ orientacji przekroczy³a zakres
+			camOrient.y = 6.28;
+		camera->SetOrientation(camOrient);
 	}
 };

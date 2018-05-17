@@ -12,11 +12,11 @@ bool Mouse::GetMouseMove(unsigned key) {
 	DIRECTINPUT::GetMouseMovement(mouseMove.x, mouseMove.y);
 	switch (key) {
 	case MouseInputSignal::Code::MOUSE_UP:
-		if (mouseMove.y > 0) return true;
+		if (mouseMove.y < 0) return true;
 		else return false;
 		break;
 	case MouseInputSignal::Code::MOUSE_DOWN:
-		if (mouseMove.y < 0)
+		if (mouseMove.y > 0)
 			return true;
 		else return false;
 		break;

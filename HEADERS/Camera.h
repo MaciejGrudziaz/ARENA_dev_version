@@ -14,6 +14,10 @@ class Camera {
 public:
 	enum Mode { FREE, BOUND };
 private:
+	std::string name;
+	double speed;
+	double turnSensitivity;
+
 	Vector position;									//pozycja kamery
 	Vector orientation;								//orientacja kamery
 	Vector center;									//pozycja punktu w kierunku którym 'patrzy' kamera
@@ -24,7 +28,7 @@ private:
 
 	Mode mode;
 
-	DynamicCharacter* character;
+	const DynamicCharacter* character;
 
 	void UpdateCameraPosition();
 	void UpdateCameraOrientation();
@@ -39,7 +43,7 @@ public:
 	//inicjalizacja kamery przy pomocy zmiennych opisuj¹cych ka¿d¹ wspó³rzêdn¹
 	void Initialize(double xPos, double yPos, double zPos, double xCen, double yCen, double zCen, double xUpVec, double yUpVec, double zUpVec,Mode mode_);
 	//inicjalizacja postaci przypisanej do kamery
-	void InitializeCharacter(DynamicCharacter& character_) { character = &character_; }
+	void InitializeCharacter(const DynamicCharacter& character_) { character = &character_; }
 	//aktualizacja parametrów kamery
 	void Update();
 	//ustawienie kamery
@@ -47,6 +51,8 @@ public:
 	//szybkie ustawienie trybu kamery wzglêdem postaci
 	void SetFirstPerson();
 	void SetThirdPerson();
+	void SetMode(Mode mode_) { mode = mode_; }
+	void SetSpeed(double speed_) { speed = speed_; }
 
 	//funkcje ustawiaj¹ce odpowiednie wartoœci dla wpsó³rzêdnych kamery 
 	void SetPosition(Vector position_) { position = position_; }
@@ -61,6 +67,8 @@ public:
 	void SetRelativePosition(double x, double y, double z) { relativePos.x = x; relativePos.y = y; relativePos.z = z; }
 	void SetRelativeCenter(Vector relativeCenter_) { relativeCenter = relativeCenter_; }
 	void SetRelativeCenter(double x, double y, double z) { relativeCenter.x = x; relativeCenter.y = y; relativeCenter.z = z; }
+	void SetName(std::string name_) { name = name_; }
+	void SetTurnSensitivity(double turnSensitivity_) { turnSensitivity = turnSensitivity_; }
 
 	//funkcje pobieraj¹ce odpowiednie wartoœci wspó³rzêdnych kamery
 	Vector GetPosition() const { return position; }
@@ -69,4 +77,8 @@ public:
 	Vector GetUpVector() const { return upvector; }
 	Vector GetRelativePosition() const { return relativePos; }
 	Vector GetRelativeCenter() const { return relativeCenter; }
+	std::string GetName() const { return name; }
+	Mode GetMode() const { return mode; }
+	double GetSpeed()const { return speed; }
+	double GetTurnSensitivity() const { return turnSensitivity; }
 };

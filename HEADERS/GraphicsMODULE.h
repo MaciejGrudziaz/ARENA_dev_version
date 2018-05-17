@@ -45,10 +45,12 @@ public:
 
 	static void RegisterLight(Light& light) { lights.push_back(&light); }
 	static void RegisterMaterial(GLenum face_, GLenum material_) { materials.push_back(std::pair<GLenum,GLenum>(face_,material_)); }
-	static void RegisterCamera(Camera& camera_);
+	static void RegisterCamera(Camera* camera_);
 	static void SetMainCamera(unsigned idx);
+	static void SetMainCamera(Camera* camera_) { mainCamera = camera_; }
 	static Camera* GetMainCamera() { return mainCamera; }
 	static Camera* GetCamera(unsigned idx);
+	static Camera* GetCamera(std::string name);
 	static Actions* GetCameraActionsModule(unsigned idx);
 	static Actions* GetMainCameraActionsModule();
 	static void InitializeLights();

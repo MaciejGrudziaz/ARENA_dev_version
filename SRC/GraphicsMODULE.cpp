@@ -31,9 +31,9 @@ void GraphicsMODULE::ProccessGraphics() {
 	SwapBuffers(WinAPIwindow::hDC);												//zamiana buforów [p³ynniejsze wykonywanie grafiki]
 }
 
-void GraphicsMODULE::RegisterCamera(Camera& camera_) {
-	cameras.push_back(&camera_);
-	camerasActions.insert(CamerasActionsMap::value_type(&camera_, new Actions()));
+void GraphicsMODULE::RegisterCamera(Camera* camera_) {
+	cameras.push_back(camera_);
+	camerasActions.insert(CamerasActionsMap::value_type(camera_, new Actions()));
 }
 
 void GraphicsMODULE::SetMainCamera(unsigned idx) {
@@ -44,6 +44,15 @@ void GraphicsMODULE::SetMainCamera(unsigned idx) {
 Camera* GraphicsMODULE::GetCamera(unsigned idx) {
 	assert(idx < cameras.size());
 	return cameras[idx];
+}
+
+Camera* GraphicsMODULE::GetCamera(std::string name) {
+	for (Camera* camera : cameras) {
+		if (strcmp(name.c_str(), camera->GetName().c_str()) == 0)
+			return camera;
+	}
+
+	return nullptr;
 }
 
 Actions* GraphicsMODULE::GetCameraActionsModule(unsigned idx) {

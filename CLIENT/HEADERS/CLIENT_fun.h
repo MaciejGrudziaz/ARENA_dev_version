@@ -14,6 +14,7 @@ void InitializeMaps();
 void InitializeCamera();
 
 void InitializePlayerInput();
+void InitializeCameraInput();
 
 void InitializeConsoleInput();
 

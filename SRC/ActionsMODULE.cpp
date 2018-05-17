@@ -4,6 +4,8 @@ Actions ActionsMODULE::actions;
 std::map<std::string, InputModuleImpl*> ActionsMODULE::inputModules;
 InputModuleImpl* ActionsMODULE::currentInputModule=nullptr;
 std::vector<PlayerInput::InputSignalStruct> ActionsMODULE::signals;
+std::string ActionsMODULE::currentInputModuleName="";
+std::string ActionsMODULE::lastInputModuleName="";
 
 void ActionsMODULE::Process() {
 	GAMEINPUT::Update();

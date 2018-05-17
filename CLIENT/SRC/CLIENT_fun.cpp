@@ -13,6 +13,7 @@ void ClientInitialization() {
 	InitializeMaps();
 
 	InitializeCamera();
+	InitializeCameraInput();
 }
 
 //inicjalizacja oœwietlenia sceny
@@ -146,7 +147,12 @@ void InitializeCamera() {
 
 	camera->SetThirdPerson();
 
-	GraphicsMODULE::RegisterCamera(*camera);
+	camera->SetName("Main");
+	camera->SetSpeed(20.0);
+	camera->SetTurnSensitivity(0.2);
+
+	GraphicsMODULE::RegisterCamera(camera);
+	GraphicsMODULE::SetMainCamera(camera);
 }
 
 //dodanie nowego bota
@@ -252,6 +258,77 @@ void InitializePlayerInput() {
 	input->Register(new KeyboardInputSignal(KeyboardInputSignal::Code::A, KeyboardInputSignal::Code::D),
 		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyUpCombo),
 		new PlayerSignalHandler(CharacterRegister::GetPlayerActionsModule(), "FullSpeed"));
+}
+
+void InitializeCameraInput() {
+	Actions* mainCamActionsMod = GraphicsMODULE::GetMainCameraActionsModule();
+	Camera* mainCam = GraphicsMODULE::GetMainCamera();
+	ActionsMODULE::RegisterInputModule(new PlayerInput("Camera"));
+	PhysicsMODULE::RegisterAdditionalActionsModules(mainCamActionsMod);
+
+	ActionsMODULE::GetActionsModule()->RegisterAction(new SetCameraFree(mainCam,"Camera"));
+	ActionsMODULE::GetActionsModule()->RegisterAction(new ResetCameraFree(ActionsMODULE::GetActionsModule()->Get("SetCameraFree")));
+
+	ActionsMODULE::RegisterInputSignal(new KeyboardInputSignal(KeyboardInputSignal::Code::RCTRL),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(ActionsMODULE::GetActionsModule(), "SetCameraFree"));
+
+	ActionsMODULE::RegisterInputSignal(new KeyboardInputSignal(KeyboardInputSignal::Code::RCTRL),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyUp),
+		new PlayerSignalHandler(ActionsMODULE::GetActionsModule(), "ResetCameraFree"));
+
+	mainCamActionsMod->RegisterAction(new CameraForwardAction(mainCam));
+	mainCamActionsMod->RegisterAction(new CameraBackwardAction(mainCam));
+	mainCamActionsMod->RegisterAction(new CameraRightAction(mainCam));
+	mainCamActionsMod->RegisterAction(new CameraLeftAction(mainCam));
+	mainCamActionsMod->RegisterAction(new CameraUpAction(mainCam));
+	mainCamActionsMod->RegisterAction(new CameraDownAction(mainCam));
+	mainCamActionsMod->RegisterAction(new CameraLookUp(mainCam, &GAMEINPUT::GetMouse()->mouseMove.y));
+	mainCamActionsMod->RegisterAction(new CameraLookDown(mainCam, &GAMEINPUT::GetMouse()->mouseMove.y));
+	mainCamActionsMod->RegisterAction(new CameraLookLeft(mainCam, &GAMEINPUT::GetMouse()->mouseMove.x));
+	mainCamActionsMod->RegisterAction(new CameraLookRight(mainCam, &GAMEINPUT::GetMouse()->mouseMove.x));
+
+	PlayerInput* input = static_cast<PlayerInput*>(ActionsMODULE::GetInputModule("Camera"));
+
+	input->Register(new KeyboardInputSignal(KeyboardInputSignal::Code::W),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(mainCamActionsMod, "CameraForward"));
+
+	input->Register(new KeyboardInputSignal(KeyboardInputSignal::Code::S),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(mainCamActionsMod, "CameraBackward"));
+
+	input->Register(new KeyboardInputSignal(KeyboardInputSignal::Code::D),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(mainCamActionsMod, "CameraRight"));
+
+	input->Register(new KeyboardInputSignal(KeyboardInputSignal::Code::A),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(mainCamActionsMod, "CameraLeft"));
+
+	input->Register(new KeyboardInputSignal(KeyboardInputSignal::Code::SPACE),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(mainCamActionsMod, "CameraUp"));
+
+	input->Register(new KeyboardInputSignal(KeyboardInputSignal::Code::LCTRL),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(mainCamActionsMod, "CameraDown"));
+
+	input->Register(new MouseInputSignal(MouseInputSignal::Code::MOUSE_UP),
+		new InputFunHandler<MouseImpl>(GAMEINPUT::GetMouse(), &MouseImpl::GetMouseMove),
+		new PlayerSignalHandler(mainCamActionsMod, "CameraLookUp"));
+
+	input->Register(new MouseInputSignal(MouseInputSignal::Code::MOUSE_DOWN),
+		new InputFunHandler<MouseImpl>(GAMEINPUT::GetMouse(), &MouseImpl::GetMouseMove),
+		new PlayerSignalHandler(mainCamActionsMod, "CameraLookDown"));
+
+	input->Register(new MouseInputSignal(MouseInputSignal::Code::MOUSE_LEFT),
+		new InputFunHandler<MouseImpl>(GAMEINPUT::GetMouse(), &MouseImpl::GetMouseMove),
+		new PlayerSignalHandler(mainCamActionsMod, "CameraLookLeft"));
+
+	input->Register(new MouseInputSignal(MouseInputSignal::Code::MOUSE_RIGHT),
+		new InputFunHandler<MouseImpl>(GAMEINPUT::GetMouse(), &MouseImpl::GetMouseMove),
+		new PlayerSignalHandler(mainCamActionsMod, "CameraLookRight"));
 }
 
 void InitializeConsoleInput() {

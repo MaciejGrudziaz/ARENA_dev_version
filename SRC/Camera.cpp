@@ -9,6 +9,8 @@
 //Vector Camera::relativeCenter = { 0.0,0.0,0.0 };
 
 Camera::Camera() {
+	speed = 0.0;
+	turnSensitivity = 0.0;
 	position = { 0.0, 0.0, 0.0 };
 	orientation = { 0.0,0.0,0.0 };
 	center = { 0.0, 0.0, 0.0 };
@@ -20,6 +22,8 @@ Camera::Camera() {
 }
 
 Camera::Camera(Vector Position, Vector Center, Vector upVector, Mode mode_){
+	speed = 0.0;
+	turnSensitivity = 0.0;
 	position = Position;
 	center = Center;
 	upvector = upVector;
@@ -28,6 +32,8 @@ Camera::Camera(Vector Position, Vector Center, Vector upVector, Mode mode_){
 }
 
 Camera::Camera(double xPos, double yPos, double zPos, double xCen, double yCen, double zCen, double xUpVec, double yUpVec, double zUpVec, Mode mode_) {
+	speed = 0.0;
+	turnSensitivity = 0.0;
 	position = { xPos,yPos,zPos };
 	center = { xCen,yCen,zCen };
 	upvector = { xUpVec,yUpVec,zUpVec };
@@ -114,19 +120,18 @@ void Camera::UpdateCameraOrientation() {
 			orientation.x = orientation.x / 360.0 * 2.0 *3.1415;
 			orientation.y = orientation.y / 360.0 * 2.0 *3.1415;
 			orientation.z = orientation.z / 360.0 * 2.0 *3.1415;
-
-			//wyliczenie wspó³rzêdnych punktu 'wycentrowania' kamery ze wzoru:
-			//y = R * sin( -orientation.x ), x = r * sin( orientation.y ), z = r * cos( orientation.y )
-			//gdzie: R - odleg³oœæ od œrodka kamery do punktu 'wycentrowania', r - rzutowanie odleg³oœci R na p³aszczyznê (X,Z), obliczona zgodnie ze wzorem: r = sqrt( R^2 + y^2 )
-			double R = sqrt((-relativePos.z + relativeCenter.z)*(-relativePos.z + relativeCenter.z) + relativePos.y*relativePos.y);
-
-			center.y = R*sin(-orientation.x);
-
-			double r = sqrt(R*R + center.y*center.y);
-
-			center.x = position.x + r*sin(orientation.y);
-			center.y = position.y - center.y;
-			center.z = position.z + r*cos(orientation.y);
 		}
 	}
+	//wyliczenie wspó³rzêdnych punktu 'wycentrowania' kamery ze wzoru:
+	//y = R * sin( -orientation.x ), x = r * sin( orientation.y ), z = r * cos( orientation.y )
+	//gdzie: R - odleg³oœæ od œrodka kamery do punktu 'wycentrowania', r - rzutowanie odleg³oœci R na p³aszczyznê (X,Z), obliczona zgodnie ze wzorem: r = sqrt( R^2 + y^2 )
+	double R = sqrt((-relativePos.z + relativeCenter.z)*(-relativePos.z + relativeCenter.z) + relativePos.y*relativePos.y);
+
+	center.y = R*sin(-orientation.x);
+
+	double r = sqrt(R*R + center.y*center.y);
+
+	center.x = position.x + r*sin(orientation.y);
+	center.y = position.y - center.y;
+	center.z = position.z + r*cos(orientation.y);
 }
