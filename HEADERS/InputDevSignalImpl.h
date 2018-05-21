@@ -62,7 +62,9 @@ struct KeyboardInputSignal :public InputSignalImpl {
 		SPACE = DIK_SPACE,
 		TILDE = DIK_GRAVE,
 		LCTRL=DIK_LCONTROL,
-		RCTRL=DIK_RCONTROL
+		RCTRL=DIK_RCONTROL,
+		UP=DIK_UP,
+		DOWN=DIK_DOWN
 	};
 
 	KeyboardInputSignal(Code val) :InputSignalImpl(val) {}

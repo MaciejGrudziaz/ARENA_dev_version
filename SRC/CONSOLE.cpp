@@ -1,33 +1,43 @@
 #include "CONSOLE.h"
 
 //inicjalizacja statycznych sk³adowych klasy
+bool CONSOLE::status;
 Actions CONSOLE::actions;
 FONT CONSOLE::consoleFont;
-unsigned int CONSOLE::enabledFunc = 0;
-Vector CONSOLE::terminalSize = { 0, 0, 0};
-Vector CONSOLE::terminalPixelSize = { 500,26,0 };
-std::string CONSOLE::terminalCommand = "";
-unsigned int CONSOLE::terminalTextSize = 0;
-char CONSOLE::terminalText[maxTerminalTextSize+1] = "";
-double CONSOLE::textScreenWidth = 0;
-double CONSOLE::textScreenHeight = 0;
-double CONSOLE::textScreenRatio = 0;
-double CONSOLE::textScreenAdjust = 0;
-unsigned long CONSOLE::timer = 0;
-std::vector<unsigned> CONSOLE::FPSval;
-
+//unsigned int CONSOLE::enabledFunc = 0;
+//Vector CONSOLE::terminalSize = { 0, 0, 0};
+//Vector CONSOLE::terminalPixelSize = { 500,264,0 };
+//std::string CONSOLE::terminalCommand = "";
+//double CONSOLE::textScreenWidth = 0;
+//double CONSOLE::textScreenHeight = 0;
+//double CONSOLE::textScreenRatio = 0;
+//double CONSOLE::textScreenAdjust = 0;
+std::string CONSOLE::currentTerminalText = "";
+std::vector<CONSOLE::TerminalTextStruct> CONSOLE::terminalTextLines;
+//double CONSOLE::screenFontHeight=0;
+unsigned CONSOLE::maxTerminaTextSize=0;
+unsigned CONSOLE::maxTerminalLinesCount=0;
+CONSOLE::ScreenParameters CONSOLE::params;
 //inicjalizacja konsoli
 void CONSOLE::Initialize() {
-	consoleFont.Initilize("Arial", 24, WinAPIwindow::hDC);										//inicjalizacja czionki ['Arial', rozmiar - 24]
+	consoleFont.Initilize("Arial", fontSize, WinAPIwindow::hDC);										//inicjalizacja czionki ['Arial', rozmiar - 24]
+	maxTerminaTextSize = ((int)params.terminalPixelSize.x / consoleFont.GetFontSize())*2 - 7;			//7 - 2 znaki, ¿eby wyrównaæ do pe³nej ramki, 2 znaki odstêpu od krawêdzi ramki, 3 znaki dla znaku ">> "
+	maxTerminalLinesCount = ((int)params.terminalPixelSize.y / consoleFont.GetFontSize()) - 2;			//2 - 1 znak odstêpu od dolnej krawêdzi, 1 znak na liniê komend
+
+	params.terminalFontSize = fontSize;
+	params.terminalPixelSize = terminalSize_garbage;
+	CountTextScreenParams();												//obliczenie parametrów opisuj¹cych ekran OpenGL dla wyœwietlania tekstu
 }
 
 //wyœwietlenie aktywnych 'funkcji' konsoli
 void CONSOLE::ShowConsoleOutput() {
-	if (IsFuncEnabled(ShowTerminal_FUNC))
-		ShowConsoleTerminal();												//wyœwietlenie terminala konsoli
+	if (status)
+		ShowConsoleTerminal();
 
-	CountTextScreenParams(1);												//obliczenie parametrów opisuj¹cych ekran OpenGL dla wyœwietlania tekstu
-	if (IsFuncEnabled(FPS_FUNC))
+	//if (IsFuncEnabled(ShowTerminal_FUNC))
+	//	ShowConsoleTerminal();												//wyœwietlenie terminala konsoli
+	//CountTextScreenParams();												//obliczenie parametrów opisuj¹cych ekran OpenGL dla wyœwietlania tekstu
+	/*if (IsFuncEnabled(FPS_FUNC))
 		ShowFPS();															//wyœwietlenie aktualnej wartoœci FPS
 	if (IsFuncEnabled(CollisionBox_FUNC))
 		DrawCollisionBoxes();												//wyœwietlenie bry³ kolizji dla wszystkich obiektów w grze
@@ -38,35 +48,41 @@ void CONSOLE::ShowConsoleOutput() {
 	if (IsFuncEnabled(GraphicsProccesTime_FUNC))
 		ShowGraphicsProccessTime();											//wyœwietlenie czasu przetwarzania grafiki
 	if (IsFuncEnabled(Timer_FUNC))
-		ShowTimer();
+		ShowTimer();*/
 }
 
 //wczytanie znaku do terminala
-void CONSOLE::GetTerminalInput(char a) {
+void CONSOLE::Insert(char a) {
 	if (a != 0x08 && a!=0x0A) {												//jeœli nie wczytanu znku 'BACKSPACE' lub 'ENTER'
-		if (terminalTextSize < maxTerminalTextSize) {						//jeœli nie przekroczono maksymalnego zakresu terminala
-			terminalText[terminalTextSize] = a;								//wczytaj nowy znak do terminala
-			terminalTextSize++;													
+		if (currentTerminalText.size() < maxTerminaTextSize) {						//jeœli nie przekroczono maksymalnego zakresu terminala
+			//terminalText[terminalTextSize] = a;								//wczytaj nowy znak do terminala
+			currentTerminalText.push_back(a);
+			//currentTerminalTextSize++;													
+		}
+		else {
+			AddTerminalTextLine(currentTerminalText,TerminalTextStruct::USER);
 		}
 	}
 	else {
 		if (a == 0x08) {													//jeœli wczytano znak 'BACKSPACE'
-			if (terminalTextSize > 0) {										//jeœli istniej¹ znaki w terminalu
-				terminalText[terminalTextSize - 1] = 0x00;					//usuñ ostatni znak
-				terminalTextSize--;
+			if (currentTerminalText.size() > 0) {										//jeœli istniej¹ znaki w terminalu
+				//terminalText[terminalTextSize - 1] = 0x00;					//usuñ ostatni znak
+				currentTerminalText.pop_back();
+				//currentTerminalTextSize--;
 			}
 		} 
 		if (a == 0x0A) {													//jeœli wczytano znak 'ENTER'
-			for (unsigned int i = 0; i < terminalTextSize; i++)
-				terminalCommand.push_back(terminalText[i]);					//wczytaj tekst z terminala do stringa komend
+			//for (unsigned int i = 0; i < terminalTextSize; i++)
+				//terminalCommand.push_back(terminalText[i]);					//wczytaj tekst z terminala do stringa komend
 
-			CheckCommand();													//sprawdŸ wprowadzon¹ komendê
+			//CheckCommand();													//sprawdŸ wprowadzon¹ komendê
+			AddTerminalTextLine(currentTerminalText, TerminalTextStruct::USER);
 		}
 	}
 }
 
 //sprawdzenie wprowadzonej komendy do terminala
-void CONSOLE::CheckCommand() {
+/*void CONSOLE::CheckCommand() {
 	if (terminalCommand == "show.fps=1")
 		EnableFunc(FPS_FUNC);
 	if (terminalCommand == "show.fps=0")
@@ -95,14 +111,12 @@ void CONSOLE::CheckCommand() {
 	}
 
 	terminalCommand = "";
-}
+}*/
 
 //wyœwietlenie terminalu konsoli
-void CONSOLE::ShowConsoleTerminal() {
-	CountTextScreenParams(2);												//obliczenie parametrów opisuj¹cych ekran OpenGL dla wyœwietlenia 't³a' terminala							
+void CONSOLE::ShowConsoleTerminal() {						
 	DrawTerminalBackground();												//wyœwietlenie 't³a' terminala
 
-	CountTextScreenParams(1);												//obliczenie parametrów opisuj¹cych ekran OpenGL dla wyœwietlania tekstu
 	TerminalText();															//wyœwietlenie tekstu w terminalu
 }
 
@@ -122,13 +136,13 @@ void CONSOLE::DrawTerminalBackground() {
 
 	glColor4d(0.3, 0.3, 0.3, 0.3);											//kolor 't³a' terminala
 	glTranslated(move.x, move.y, move.z);									//ustawienie pozycji terminala
- 
+	
 	//narysowanie terminala
 	glBegin(GL_POLYGON);
-	glVertex3d(-terminalSize.x / 2.0, terminalSize.y / 2.0, 0.0);
-	glVertex3d(-terminalSize.x / 2.0, -terminalSize.y / 2.0, 0.0);
-	glVertex3d(terminalSize.x / 2.0, -terminalSize.y / 2.0, 0.0);
-	glVertex3d(terminalSize.x / 2.0, terminalSize.y / 2.0, 0.0);
+	glVertex3d(-params.terminalSize.x / 2.0, params.terminalSize.y / 2.0, 0.0);
+	glVertex3d(-params.terminalSize.x / 2.0, -params.terminalSize.y / 2.0, 0.0);
+	glVertex3d(params.terminalSize.x / 2.0, -params.terminalSize.y / 2.0, 0.0);
+	glVertex3d(params.terminalSize.x / 2.0, params.terminalSize.y / 2.0, 0.0);
 	glEnd();
 
 	glColor3d(0.8, 0.8, 0.8);												//przywrócenie standardowej kolorystyki 
@@ -142,14 +156,14 @@ void CONSOLE::DrawTerminalBackground() {
 //pobranie pozycji 't³a' terminalu konsoli
 Vector CONSOLE::GetTerminalBackgroundPosition() {
 	//ustawienie pozzycji x i z terminala
-	Vector move(-(textScreenWidth - terminalSize.x / 2.0 - 0.05*textScreenHeight), 0, -2);
+	Vector move(-(params.textScreenWidth - params.terminalSize.x / 2.0 - params.terminalScreenFontHeight), 0, ConsoleDepthVal);
 
 	//ustalenie wielkoœci terminala w OpenGL ze wzglêdu na wielkoœæ terminalu w pikselach, rozdzielczoœæ ekranu oraz wielkoœæ ekranu w OpenGL
-	terminalSize.x = terminalPixelSize.x / (double)WinAPIwindow::screenWidth * 2 * textScreenWidth;
-	terminalSize.y = terminalPixelSize.y / (double)WinAPIwindow::screenHeight * 2 * textScreenHeight;
+	params.terminalSize.x = params.terminalPixelSize.x / (double)WinAPIwindow::screenWidth * 2 * params.textScreenWidth;
+	params.terminalSize.y = params.terminalPixelSize.y / (double)WinAPIwindow::screenHeight * 2 * params.textScreenHeight;
 
 		//ustalenie pozycji Y terminalu dla trybu pe³noekranowego
-		move.y = textScreenHeight - terminalSize.y / 2.0 - 0.05*textScreenHeight;	
+	move.y = params.textScreenHeight - params.terminalSize.y / 2.0 - params.terminalScreenFontHeight;
 
 
 	return move;
@@ -157,24 +171,33 @@ Vector CONSOLE::GetTerminalBackgroundPosition() {
 
 //wyœwietlenie tekstu w terminalu
 void CONSOLE::TerminalText() {
-	Vector move = GetTerminalTextPosition();								//pobranie pozycji tekstu w terminalu
+	Vector move = GetTerminalTextPosition(0);								//pobranie pozycji tekstu w terminalu
 
-	WriteTextOnScreen(move, terminalText, CONSOLE_white);
+	WriteTextOnScreen(move, ">> "+currentTerminalText, CONSOLE_white);
+
+	unsigned terminalTextLinesCount = terminalTextLines.size();
+	unsigned linesToDisplay = maxTerminalLinesCount;
+	if (terminalTextLinesCount < maxTerminalLinesCount) linesToDisplay = terminalTextLinesCount;
+	for (unsigned i = 1; i < linesToDisplay +1; ++i) {
+		move= GetTerminalTextPosition(i);
+		WriteTextOnScreen(move, terminalTextLines[terminalTextLinesCount-i].line, CONSOLE_white);
+	}
 }
 
 //pobranie pozycji tekstu w terminalu
-Vector CONSOLE::GetTerminalTextPosition() {
-	Vector move(-(textScreenWidth - 0.07*textScreenHeight), 0, -1);			//ustalenie pozycji X i Z tekstu
+Vector CONSOLE::GetTerminalTextPosition(unsigned line) {
+	Vector terminalMove = GetTerminalBackgroundPosition();
 
+	Vector move(-(params.textScreenWidth - 2.0*params.terminalScreenFontHeight), 0, ConsoleDepthVal);			//ustalenie pozycji X i Z tekstu
 		//ustalenie pozycji Y na podstawie wielkoœci ekranu oraz terminala w OpenGL
-		move.y = textScreenHeight - terminalSize.y / 2.0 - 0.05*textScreenHeight + textScreenAdjust / 4.0;
+		move.y = params.textScreenHeight - params.terminalSize.y + line*params.terminalScreenFontHeight;
 		//ustalenie pozycji Y tekstu dla trybu okienkowego
 
 	return move;
 }
 
 //wyœwietlenie aktualnej liczby FPS
-void CONSOLE::ShowFPS() {
+/*void CONSOLE::ShowFPS() {
 	char buffer[10];														//bufor s³u¿acy do wyœwietlenia aktualnej iloœci FPS
 	Vector color;
 
@@ -189,10 +212,10 @@ void CONSOLE::ShowFPS() {
 	Vector move = GetTextScreenPosition(RIGHT, 1);
 
 	WriteTextOnScreen(move, buffer,color);
-}
+}*/
 
 //pobranie aktulanej wartoœci FPS
-unsigned int CONSOLE::GetFPS() {
+/*unsigned int CONSOLE::GetFPS() {
 	unsigned long t = TIMER::GetTime("FPS");								//pobranie czasu trwania poprzedniej kaltki z odpowiedniego Timera
 
 	//obliczenie wartoœci FPS
@@ -213,10 +236,10 @@ unsigned int CONSOLE::GetFPS() {
 	FPS /= FPSval.size();
 
 	return FPS;																//zwrócenie wartoœci FPS
-}
+}*/
 
 //wyœwietalnie bry³ kolizji postaci [klasy 'Character' i 'Player']
-void CONSOLE::DrawCollisionBoxes() {
+/*void CONSOLE::DrawCollisionBoxes() {
 	for (unsigned i = 0; i < CharacterRegister::GetStaticCharacterCount(); ++i)
 		if (CharacterRegister::GetStaticCharacter(i)->IsEnabled())
 			CharacterRegister::GetStaticCharacter(i)->DrawCollisionBox();
@@ -231,39 +254,39 @@ void CONSOLE::DrawCollisionBoxes() {
 	
 	if (CharacterRegister::GetPlayer()->IsEnabled())
 		CharacterRegister::GetPlayer()->DrawCollisionBox();
-}
+}*/
 
 //wyœwietlenie czasu wykonywania operacji pobrania sygna³ów wejœciwoych
-void CONSOLE::ShowInputProccessTime() {
+/*void CONSOLE::ShowInputProccessTime() {
 	char buffer[10];														//bufor dla wyœwietlania
 	_itoa_s(TIMER::GetTime("Input"), buffer, 10);							//pobranie wartoœci czasu przetwarzania sygna³ów wejœciowych i zapisanie jej do buforu
 
 	Vector move = GetTextScreenPosition(RIGHT, 3);
 
 	WriteTextOnScreen(move, buffer, CONSOLE_white);
-}
+}*/
 
 //wyœwietlenie czasu wykonania operacji obliczenia 'fizyki' gry
-void CONSOLE::ShowPhysicsProcessTime() {
+/*void CONSOLE::ShowPhysicsProcessTime() {
 	char buffer[10];														//bufor dla wartoœci wyœwietlanej
 	_itoa_s(TIMER::GetTime("Physics"), buffer, 10);							//pobranie wartoœci czasu przetwarzania 'fizyki' gry i wstawienie jej do bufora
 
 	Vector move = GetTextScreenPosition(RIGHT, 4);
 
 	WriteTextOnScreen(move, buffer, CONSOLE_white);
-}
+}*/
 
 //wyœwietlenie czasu wykonania operacji wyœwietlenia grafiki
-void CONSOLE::ShowGraphicsProccessTime() {
+/*void CONSOLE::ShowGraphicsProccessTime() {
 	char buffer[10];														//bufor dla wartoœci wyœwietlanej
 	_itoa_s(TIMER::GetTime("Graphics"), buffer, 10);						//pobranie wartoœci czasu przetwarzania grafiki OpenGL i wstawienie jej do bufora
 
 	Vector move = GetTextScreenPosition(RIGHT, 5);
 
 	WriteTextOnScreen(move, buffer, CONSOLE_white);
-}
+}*/
 
-void CONSOLE::ShowTimer() {
+/*void CONSOLE::ShowTimer() {
 	char buffer[13];														//bufor dla wartoœci wyœwietlanej
 
 	timer += TIMER::GetTime("FPS");											//zaktualizowanie timera
@@ -273,10 +296,10 @@ void CONSOLE::ShowTimer() {
 	Vector move = GetTextScreenPosition(LEFT, 1);
 
 	WriteTextOnScreen(move, buffer, CONSOLE_white);
-}
+}*/
 
 //zapis wartoœci zmierzonego czasu do bufora
-void CONSOLE::GetTimerVal(char* buffer) {
+/*void CONSOLE::GetTimerVal(char* buffer) {
 	int h, m, s, ms;
 
 	unsigned long timerTmp = timer;
@@ -301,47 +324,49 @@ void CONSOLE::GetTimerVal(char* buffer) {
 	buffer[9] = ms / 100 + 0x30;
 	buffer[10] = (ms - 100 * (ms / 100))/10 + 0x30;
 	buffer[11] = NULL;
-}
+}*/
 
 //zresetowanie timera
-void CONSOLE::ResetTimer() {
+/*void CONSOLE::ResetTimer() {
 	timer = 0;
 }
 
 void CONSOLE::ShowPlayerPos() {
 	//buffer
-}
+}*/
 
 //obliczenie parametrów opisuj¹cych wymiary okna OpenGL
-void CONSOLE::CountTextScreenParams(double z) {
+void CONSOLE::CountTextScreenParams() {
 	//obliczenie parametrów ekranu OpenGL w zale¿noœci od parametru 'z' [przesuniêcia wg³¹b ekranu]
 	//wysokoœæ ekranu
-	textScreenHeight = z*tan((WinAPIwindow::FOV / 360.0 * 2 * 3.1415) / 2.0);
+	params.textScreenHeight = -ConsoleDepthVal*tan((WinAPIwindow::FOV / 360.0 * 2 * 3.1415) / 2.0);
 	//stosunek rozdzielczoœci ekranu [szerokoœæ / wysokoœæ]
-	textScreenRatio = (double)WinAPIwindow::screenWidth / (double)WinAPIwindow::screenHeight;
+	params.textScreenRatio = (double)WinAPIwindow::screenWidth / (double)WinAPIwindow::screenHeight;
 	//szerokoœæ ekranu
-	textScreenWidth = textScreenHeight*textScreenRatio;
+	params.textScreenWidth = params.textScreenHeight*params.textScreenRatio;
 	//ró¿nica miêdzy wielkoœci¹ 't³a' ekranu, a wielkoœci¹ tekstu
-	textScreenAdjust = terminalSize.y - ((double)consoleFont.GetFontSize() / (double)WinAPIwindow::screenHeight) * 2 * textScreenHeight;
+	//params.textScreenAdjust = params.terminalSize.y - ((double)consoleFont.GetFontSize() / (double)WinAPIwindow::screenHeight) * 2 * params.textScreenHeight;
+
+	params.terminalScreenFontHeight = ((double)params.terminalFontSize / (double)WinAPIwindow::screenHeight)*2.0*params.textScreenHeight;
 }
 
-Vector CONSOLE::GetTextScreenPosition(alignment alin, unsigned int line) {
+/*Vector CONSOLE::GetTextScreenPosition(alignment alin, unsigned int line) {
 	Vector move;
 	if (alin == LEFT) {
-		move.x = -(0.95*textScreenWidth); move.z = -1;
+		move.x = -(0.95*params.textScreenWidth); move.z = ConsoleDepthVal;
 
-		move.y = textScreenHeight - terminalSize.y - line*0.05*textScreenHeight + textScreenAdjust / 4.0 - 0.05;
+		move.y = params.textScreenHeight - params.terminalSize.y - line*0.05*params.textScreenHeight + params.textScreenAdjust / 4.0 - 0.05;
 	}
 	else {		
-		move.x = 0.85*textScreenWidth; move.z = -1;
+		move.x = 0.85*params.textScreenWidth; move.z = ConsoleDepthVal;
 																				
-		move.y = textScreenHeight - terminalSize.y / 2.0 - line*0.05*textScreenHeight + textScreenAdjust / 4.0;
+		move.y = params.textScreenHeight - params.terminalSize.y / 2.0 - line*0.05*params.textScreenHeight + params.textScreenAdjust / 4.0;
 	}
 
 	return move;
-}
+}*/
 
-void CONSOLE::WriteTextOnScreen(Vector position, char buffer[],Vector color) {
+void CONSOLE::WriteTextOnScreen(Vector position, std::string buffer,Vector color,const FONT& font_) {
 	glPushMatrix();															//zapisanie macierzy widoku OepnGL ['MODELVIEW'] na stosie 
 
 	glLoadIdentity();
@@ -353,7 +378,7 @@ void CONSOLE::WriteTextOnScreen(Vector position, char buffer[],Vector color) {
 		static_cast<GLfloat>(color.z));										//wybranie koloru wyœwietlanego napisu [bia³y]
 	glTranslated(position.x, position.y, position.z);						//ustawienie odpowiedniej pozycji								
 	glRasterPos2d(0.0, 0.0);
-	consoleFont.PrintString(buffer);										//wyœwietlenie napisu
+	font_.PrintString(const_cast<char*>(buffer.c_str()));										//wyœwietlenie napisu
 
 	glColor3d(0.8, 0.8, 0.8);												//przywrócenie podstawowych kolorów dla wyœwietlania modeli
 
@@ -361,4 +386,21 @@ void CONSOLE::WriteTextOnScreen(Vector position, char buffer[],Vector color) {
 	glEnable(GL_LIGHTING);													//w³¹czenie oœwieltenia sceny
 
 	glPopMatrix();															//przywrócenie macierzy widoku OpenGL ze stosu
+}
+
+double CONSOLE::GetScreenFontHeight(unsigned fontSize) {
+	double screenFontSize = ((double)fontSize / (double)WinAPIwindow::screenHeight)*2.0*params.textScreenHeight;
+	return screenFontSize;
+}
+
+void CONSOLE::AddTerminalTextLine(std::string line,TerminalTextStruct::Source source_) {
+	if (terminalTextLines.size() < TerminalLinesBufferCapacity) {
+		terminalTextLines.push_back(TerminalTextStruct(line,source_));
+	}
+	else {
+		terminalTextLines.erase(terminalTextLines.begin());
+		terminalTextLines.push_back(TerminalTextStruct(line,source_));
+	}
+
+	currentTerminalText = "";
 }

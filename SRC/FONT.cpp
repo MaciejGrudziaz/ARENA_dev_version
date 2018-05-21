@@ -15,7 +15,7 @@ void FONT::Initilize(char* fontName, unsigned int FontSize, HDC _hDC) {
 }
 
 //wypisanie stringa na ekranie
-void FONT::PrintString(char* str) {
+void FONT::PrintString(char* str) const{
 	if ((listBase == 0) || (str == NULL))												//sprawdzenie czy czionka istnieje i czy podany string istnieje
 		return;
 

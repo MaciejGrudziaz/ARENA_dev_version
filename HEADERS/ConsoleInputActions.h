@@ -26,7 +26,7 @@ struct Press :public ActionImpl {
 	Press(unsigned long* mainDelay_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value(value_), ActionImpl((Char2String(value_)).str) {}
 	void operator()() {
 		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
-			CONSOLE::GetTerminalInput(value);
+			CONSOLE::Insert(value);
 			delay = (*mainDelay);
 		}
 	}
@@ -38,7 +38,62 @@ struct PressBackspace :public ActionImpl {
 	PressBackspace(unsigned long* mainDelay_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), ActionImpl("Backspace") {}
 	void operator()() {
 		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
-			CONSOLE::GetTerminalInput(0x08); 
+			CONSOLE::Insert(0x08); 
+			delay = (*mainDelay);
+		}
+	}
+};
+
+struct NextCommand :public ActionImpl {
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool reset;
+	int commandIdx;
+	NextCommand(unsigned long* mainDelay_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), reset(true), commandIdx(-1), ActionImpl("NextCommand") {}
+	void operator()() {
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			std::string line="";
+			unsigned terminalLinesNum = CONSOLE::GetTerminalTextLinesSize();
+			if (reset) {
+				commandIdx = terminalLinesNum;
+				reset = false;
+			}
+			CONSOLE::TerminalTextStruct terminalLine;
+
+			if (--commandIdx < 0) commandIdx = 0;
+			terminalLine = CONSOLE::GetTerminalText(commandIdx);
+
+			if (terminalLine.line != "") CONSOLE::SetCurrentTerminalText(terminalLine.line);
+
+			delay = (*mainDelay);
+		}
+	}
+};
+
+struct PreviousCommand :public ActionImpl {
+	unsigned long delay;
+	unsigned long* mainDelay;
+	int* commandIdx;
+	bool* reset;
+	PreviousCommand(unsigned long* mainDelay_,ActionImpl* nextCommand_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), ActionImpl("PreviousCommand") {
+		commandIdx = &(static_cast<NextCommand*>(nextCommand_)->commandIdx);
+		reset = &(static_cast<NextCommand*>(nextCommand_)->reset);
+	}
+	void operator()() {
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			std::string line = "";
+			unsigned terminalLinesNum = CONSOLE::GetTerminalTextLinesSize();
+			CONSOLE::TerminalTextStruct terminalLine;
+
+			if (*reset == true) {
+				*commandIdx = terminalLinesNum;
+				*reset = false;
+			}
+
+			if (++(*commandIdx) >= terminalLinesNum) *commandIdx = terminalLinesNum-1;
+			terminalLine = CONSOLE::GetTerminalText(*commandIdx); 
+
+			if (terminalLine.line != "") CONSOLE::SetCurrentTerminalText(terminalLine.line);
 			delay = (*mainDelay);
 		}
 	}
@@ -47,11 +102,16 @@ struct PressBackspace :public ActionImpl {
 struct PressEnter :public ActionImpl {
 	unsigned long delay;
 	unsigned long* mainDelay;
-	PressEnter(unsigned long* mainDelay_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), ActionImpl("Enter") {}
+	bool* nextCommandActionReset;
+	PressEnter(unsigned long* mainDelay_,ActionImpl* nextCommand_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), ActionImpl("Enter") {
+		nextCommandActionReset = &(static_cast<NextCommand*>(nextCommand_)->reset);
+	}
 	void operator()() {
 		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
-			CONSOLE::GetTerminalInput(0x0A);
+			CONSOLE::Insert(0x0A);
+			*nextCommandActionReset = true;
 			delay = (*mainDelay);
 		}
 	}
 };
+

@@ -29,7 +29,7 @@ public:
 
 	void Initilize(char* fontName, unsigned int fontSize, HDC _hDC);				//inicjalizacja wybranej czcionki
 
-	void PrintString(char* str);													//wypisanie stringa na ekranie
+	void PrintString(char* str) const;													//wypisanie stringa na ekranie
 
-	unsigned int GetFontSize() { return fontSize; }
+	unsigned int GetFontSize() const { return fontSize; }
 };

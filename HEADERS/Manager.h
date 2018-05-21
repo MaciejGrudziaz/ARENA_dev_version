@@ -3,3 +3,5 @@
 #include <SingletonHolder.h>
 
 typedef SingletonHolder<CommunicationManager> communicationManager;
+typedef SingletonHolder<CommunicationManager> consoleCommunicationManager;
+	

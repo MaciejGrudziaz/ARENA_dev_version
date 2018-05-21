@@ -1,7 +1,7 @@
 #include "ConsoleInput.h"
 
 void ConsoleInput::Process() {
-	delay += PHYSICSCONST::targetFrameTime;
+	delay += (unsigned long)PHYSICSCONST::targetFrameTime;
 	PlayerInput::Process();
 }
 
@@ -37,7 +37,9 @@ void ConsoleInput::Init() {
 	CONSOLE::GetActionsModule()->RegisterAction(new Press<'.'>(&delay));
 	CONSOLE::GetActionsModule()->RegisterAction(new Press<'='>(&delay));
 	CONSOLE::GetActionsModule()->RegisterAction(new PressBackspace(&delay));
-	CONSOLE::GetActionsModule()->RegisterAction(new PressEnter(&delay));
+	CONSOLE::GetActionsModule()->RegisterAction(new NextCommand(&delay));
+	CONSOLE::GetActionsModule()->RegisterAction(new PreviousCommand(&delay, CONSOLE::GetActionsModule()->Get("NextCommand")));
+	CONSOLE::GetActionsModule()->RegisterAction(new PressEnter(&delay, CONSOLE::GetActionsModule()->Get("NextCommand")));
 
 	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::A),
 		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
@@ -135,4 +137,10 @@ void ConsoleInput::Init() {
 	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::ENTER),
 		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
 		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "Enter"));
+	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::UP),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "NextCommand"));
+	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::DOWN),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "PreviousCommand"));
 }
