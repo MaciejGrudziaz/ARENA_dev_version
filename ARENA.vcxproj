@@ -139,6 +139,10 @@
     <ClInclude Include="HEADERS\CharacterRegister.h" />
     <ClInclude Include="HEADERS\CollisionDetection.h" />
     <ClInclude Include="HEADERS\ActionsImpl.h" />
+    <ClInclude Include="HEADERS\ConsoleBasicFunctions.h" />
+    <ClInclude Include="HEADERS\ConsoleFunctions.h" />
+    <ClInclude Include="HEADERS\ConsoleFunImpl.h" />
+    <ClInclude Include="HEADERS\ConsoleFunVec.h" />
     <ClInclude Include="HEADERS\ConsoleInput.h" />
     <ClInclude Include="HEADERS\ConsoleInputActions.h" />
     <ClInclude Include="HEADERS\GameObjects.h" />
@@ -147,6 +151,7 @@
     <ClInclude Include="HEADERS\InputFunImpl.h" />
     <ClInclude Include="HEADERS\InputModuleImpl.h" />
     <ClInclude Include="HEADERS\InputSystemImpl.h" />
+    <ClInclude Include="HEADERS\LineAnalyzer.h" />
     <ClInclude Include="HEADERS\Manager.h" />
     <ClInclude Include="HEADERS\CONSOLE.h" />
     <ClInclude Include="HEADERS\DIRECTINPUT.h" />
@@ -204,6 +209,8 @@
     <ClCompile Include="SRC\CharacterRegister.cpp" />
     <ClCompile Include="SRC\CollisionDetection.cpp" />
     <ClCompile Include="SRC\CONSOLE.cpp" />
+    <ClCompile Include="SRC\ConsoleBasicFunctions.cpp" />
+    <ClCompile Include="SRC\ConsoleFunVec.cpp" />
     <ClCompile Include="SRC\ConsoleInput.cpp" />
     <ClCompile Include="SRC\DIRECTINPUT.cpp" />
     <ClCompile Include="SRC\DynamicCharacter.cpp" />
@@ -213,6 +220,7 @@
     <ClCompile Include="SRC\GAMElogic.cpp" />
     <ClCompile Include="SRC\InputDevImpl.cpp" />
     <ClCompile Include="SRC\InputSystemImpl.cpp" />
+    <ClCompile Include="SRC\LineAnalyzer.cpp" />
     <ClCompile Include="SRC\StandardCollision.cpp" />
     <ClCompile Include="SRC\GUI.cpp" />
     <ClCompile Include="SRC\Gun.cpp" />
