@@ -18,19 +18,237 @@ namespace {
 	};
 }
 
-template<char value_>
+struct PressRShift :public ActionImpl {
+	bool pressed;
+	PressRShift() :pressed(false),ActionImpl("PressRShift") {}
+
+	void operator()() {
+		pressed = true;
+	}
+};
+
+struct ReleaseRShift :public ActionImpl {
+	bool* pressed;
+	ReleaseRShift(ActionImpl* pressLShift_) :ActionImpl("ReleaseRShift") {
+		pressed = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
+
+	void operator()() {
+		*pressed = false;
+	}
+};
+
+
+template<char value_, char specialValue_>
 struct Press :public ActionImpl {
+	char basicValue;
+	char specialValue;
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_, ActionImpl* pressRShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), specialValue(specialValue_),basicValue(value_), ActionImpl((Char2String(value_)).str) {
+		pressRShift = &(static_cast<PressRShift*>(pressRShift_)->pressed);
+	}
+	void operator()() {
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			char value;
+			if (*pressRShift) value = specialValue;
+			else value = basicValue;
+			CONSOLE::Insert(value);
+			delay = (*mainDelay);
+		}
+	}
+};
+
+/*template<>
+struct Press<'0'> :public ActionImpl {
 	char value;
 	unsigned long delay;
 	unsigned long* mainDelay;
-	Press(unsigned long* mainDelay_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value(value_), ActionImpl((Char2String(value_)).str) {}
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_,ActionImpl* pressLShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value('0'), ActionImpl("0") {
+		pressRShift = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
 	void operator()() {
+		if (*pressRShift) value = ')';
+		else value = '0';
 		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
 			CONSOLE::Insert(value);
 			delay = (*mainDelay);
 		}
 	}
 };
+
+template<>
+struct Press<'1'> :public ActionImpl {
+	char value;
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_, ActionImpl* pressLShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value('1'), ActionImpl("1") {
+		pressRShift = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
+	void operator()() {
+		if (*pressRShift) value = '!';
+		else value = '1';
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			CONSOLE::Insert(value);
+			delay = (*mainDelay);
+		}
+	}
+};
+
+template<>
+struct Press<'2'> :public ActionImpl {
+	char value;
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_, ActionImpl* pressLShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value('2'), ActionImpl("2") {
+		pressRShift = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
+	void operator()() {
+		if (*pressRShift) value = '@';
+		else value = '2';
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			CONSOLE::Insert(value);
+			delay = (*mainDelay);
+		}
+	}
+};
+
+template<>
+struct Press<'3'> :public ActionImpl {
+	char value;
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_, ActionImpl* pressLShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value('3'), ActionImpl("3") {
+		pressRShift = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
+	void operator()() {
+		if (*pressRShift) value = '#';
+		else value = '3';
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			CONSOLE::Insert(value);
+			delay = (*mainDelay);
+		}
+	}
+};
+
+template<>
+struct Press<'4'> :public ActionImpl {
+	char value;
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_, ActionImpl* pressLShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value('4'), ActionImpl("4") {
+		pressRShift = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
+	void operator()() {
+		if (*pressRShift) value = '$';
+		else value = '4';
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			CONSOLE::Insert(value);
+			delay = (*mainDelay);
+		}
+	}
+};
+
+template<>
+struct Press<'5'> :public ActionImpl {
+	char value;
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_, ActionImpl* pressLShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value('5'), ActionImpl("5") {
+		pressRShift = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
+	void operator()() {
+		if (*pressRShift) value = '%';
+		else value = '5';
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			CONSOLE::Insert(value);
+			delay = (*mainDelay);
+		}
+	}
+};
+
+template<>
+struct Press<'6'> :public ActionImpl {
+	char value;
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_, ActionImpl* pressLShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value('6'), ActionImpl("6") {
+		pressRShift = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
+	void operator()() {
+		if (*pressRShift) value = '^';
+		else value = '6';
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			CONSOLE::Insert(value);
+			delay = (*mainDelay);
+		}
+	}
+};
+
+template<>
+struct Press<'7'> :public ActionImpl {
+	char value;
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_, ActionImpl* pressLShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value('7'), ActionImpl("7") {
+		pressRShift = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
+	void operator()() {
+		if (*pressRShift) value = '&';
+		else value = '7';
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			CONSOLE::Insert(value);
+			delay = (*mainDelay);
+		}
+	}
+};
+
+template<>
+struct Press<'8'> :public ActionImpl {
+	char value;
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_, ActionImpl* pressLShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value('8'), ActionImpl("8") {
+		pressRShift = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
+	void operator()() {
+		if (*pressRShift) value = '*';
+		else value = '8';
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			CONSOLE::Insert(value);
+			delay = (*mainDelay);
+		}
+	}
+};
+
+template<>
+struct Press<'9'> :public ActionImpl {
+	char value;
+	unsigned long delay;
+	unsigned long* mainDelay;
+	bool* pressRShift;
+	Press(unsigned long* mainDelay_, ActionImpl* pressLShift_) :delay(TerminalReadDelayVal), mainDelay(mainDelay_), value('0'), ActionImpl("9") {
+		pressRShift = &(static_cast<PressRShift*>(pressLShift_)->pressed);
+	}
+	void operator()() {
+		if (*pressRShift) value = '(';
+		else value = '9';
+		if ((*mainDelay) - delay >= TerminalReadDelayVal) {
+			CONSOLE::Insert(value);
+			delay = (*mainDelay);
+		}
+	}
+};*/
 
 struct PressBackspace :public ActionImpl {
 	unsigned long delay;

@@ -2,6 +2,7 @@
 #include "CharacterRegister.h"
 #include "WinAPIheaders.h"
 #include "FONT.h"
+#include "LineAnalyzer.h"
 
 //----------------------------------FUNKCJE KONSOLI----------------------------------
 //----------definicja funkcji u¿ywanych w konsoli jako sta³ych numerycznych----------
@@ -19,7 +20,7 @@ namespace {
 	const unsigned fontSize = 12;
 	const int ConsoleDepthVal = -1;
 	const int TerminalLinesBufferCapacity = 100;
-	const Vector terminalSize_garbage = { 500,264,0 };
+	const Vector TerminalSize = { 500,264,0 };
 
 	const Vector CONSOLE_white(1.0, 1.0, 1.0);
 	const Vector CONSOLE_green(0.0, 1.0, 0.0);
@@ -44,6 +45,7 @@ public:
 		Vector terminalPixelSize;														//wielkoœæ terminala w pikselach [const]
 		double textScreenWidth;															//PO£OWA szerokoœci ekranu
 		double textScreenHeight;														//PO£OWA wysokoœci ekranu
+		double textScreenDepth;
 		double textScreenRatio;															//stosunek rozdzielczoœci ekranu [szerokoœæ/wysokoœæ]
 		//double textScreenAdjust;														//ró¿nica pomiêdzy wysokoœci¹ 't³a' terminalu, a wielkoœci¹ tekstu
 		double terminalScreenFontHeight;												//wielkoœæ czcionki w uk³adzie OpenGL
@@ -64,6 +66,9 @@ private:
 	CONSOLE& operator=(const CONSOLE&) {}
 
 	static bool status;
+
+	static ConsoleFunVec consoleFunVec;
+	static LineAnalyzer lineAnalyzer;
 
 	static Actions actions;
 
@@ -127,12 +132,22 @@ private:
 	//static Vector GetTextScreenPosition(alignment alin, unsigned int line);
 	//static void WriteTextOnScreen(Vector position, std::string buffer, Vector color, const FONT& font_=consoleFont);
 
+	static void ExecuteCommand();
+
+	static void DisplayLineAnalyzerErrors(LineAnalyzer::Errors& errors);
+	static void DisplayFunErrors(ConsoleFunError& funError);
+
 public:
 	static void Initialize();																//inicjalizacja konsoli
 
 	static void ShowConsoleOutput();														//wyœwietlenie aktywnych 'funkcji' konsoli
 
 	static Actions* GetActionsModule() { return &actions; }
+
+	template <class Fun>
+	static void RegisterConsoleFunction(Fun consoleFun_) {
+		consoleFunVec.Register(consoleFun_);
+	}
 
 	static void ShowTerminal() { status = true; }						//w³¹czenie terminala
 
@@ -142,7 +157,7 @@ public:
 
 	static void Insert(char a);													//wczytanie znaku do terminala
 
-	ScreenParameters GetScreenParameters() { return params; }
+	static ScreenParameters GetScreenParameters() { return params; }
 
 	static void AddTerminalTextLine(std::string line, TerminalTextStruct::Source source_);
 

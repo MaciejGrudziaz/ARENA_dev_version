@@ -53,6 +53,14 @@ struct KeyboardInputSignal :public InputSignalImpl {
 
 		_0 = DIK_0,
 		_1 = DIK_1,
+		_2 = DIK_2,
+		_3 = DIK_3,
+		_4 = DIK_4,
+		_5 = DIK_5,
+		_6 = DIK_6,
+		_7 = DIK_7,
+		_8  =DIK_8,
+		_9 = DIK_9,
 
 		ESC = DIK_ESCAPE,
 		BACKSPACE = DIK_BACKSPACE,
@@ -63,6 +71,8 @@ struct KeyboardInputSignal :public InputSignalImpl {
 		TILDE = DIK_GRAVE,
 		LCTRL=DIK_LCONTROL,
 		RCTRL=DIK_RCONTROL,
+		LSHIFT=DIK_LSHIFT,
+		RSHIFT=DIK_RSHIFT,
 		UP=DIK_UP,
 		DOWN=DIK_DOWN
 	};

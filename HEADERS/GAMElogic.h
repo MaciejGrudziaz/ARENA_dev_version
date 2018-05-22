@@ -1,6 +1,7 @@
 #pragma once
 #include "ModulesAdmin.h"
 #include "ConsoleInput.h"
+#include "ConsoleBasicFunctions.h"
 #include "ActionsModuleActions.h"
 #include "LOGFILE.h"
 
@@ -25,6 +26,7 @@ class GAMElogic {
 
 	static void InitializeInputModule();
 	static void InitializeConsoleInput() { static_cast<ConsoleInput*>(ActionsMODULE::GetInputModule("Console"))->Init(); }
+	static void InitializeConsoleBasicFunctions() { ConsoleBasicFunctions::Init(); }
 
 public:
 	static void InitializeGameLogic();								//inicjalziacja logiki gry

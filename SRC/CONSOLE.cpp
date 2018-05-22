@@ -2,22 +2,16 @@
 
 //inicjalizacja statycznych sk³adowych klasy
 bool CONSOLE::status;
+ConsoleFunVec CONSOLE::consoleFunVec;
+LineAnalyzer CONSOLE::lineAnalyzer;
 Actions CONSOLE::actions;
 FONT CONSOLE::consoleFont;
-//unsigned int CONSOLE::enabledFunc = 0;
-//Vector CONSOLE::terminalSize = { 0, 0, 0};
-//Vector CONSOLE::terminalPixelSize = { 500,264,0 };
-//std::string CONSOLE::terminalCommand = "";
-//double CONSOLE::textScreenWidth = 0;
-//double CONSOLE::textScreenHeight = 0;
-//double CONSOLE::textScreenRatio = 0;
-//double CONSOLE::textScreenAdjust = 0;
 std::string CONSOLE::currentTerminalText = "";
 std::vector<CONSOLE::TerminalTextStruct> CONSOLE::terminalTextLines;
-//double CONSOLE::screenFontHeight=0;
 unsigned CONSOLE::maxTerminaTextSize=0;
 unsigned CONSOLE::maxTerminalLinesCount=0;
 CONSOLE::ScreenParameters CONSOLE::params;
+
 //inicjalizacja konsoli
 void CONSOLE::Initialize() {
 	consoleFont.Initilize("Arial", fontSize, WinAPIwindow::hDC);										//inicjalizacja czionki ['Arial', rozmiar - 24]
@@ -25,8 +19,9 @@ void CONSOLE::Initialize() {
 	maxTerminalLinesCount = ((int)params.terminalPixelSize.y / consoleFont.GetFontSize()) - 2;			//2 - 1 znak odstêpu od dolnej krawêdzi, 1 znak na liniê komend
 
 	params.terminalFontSize = fontSize;
-	params.terminalPixelSize = terminalSize_garbage;
+	params.terminalPixelSize = TerminalSize;
 	CountTextScreenParams();												//obliczenie parametrów opisuj¹cych ekran OpenGL dla wyœwietlania tekstu
+	params.textScreenDepth = ConsoleDepthVal;
 }
 
 //wyœwietlenie aktywnych 'funkcji' konsoli
@@ -34,21 +29,7 @@ void CONSOLE::ShowConsoleOutput() {
 	if (status)
 		ShowConsoleTerminal();
 
-	//if (IsFuncEnabled(ShowTerminal_FUNC))
-	//	ShowConsoleTerminal();												//wyœwietlenie terminala konsoli
-	//CountTextScreenParams();												//obliczenie parametrów opisuj¹cych ekran OpenGL dla wyœwietlania tekstu
-	/*if (IsFuncEnabled(FPS_FUNC))
-		ShowFPS();															//wyœwietlenie aktualnej wartoœci FPS
-	if (IsFuncEnabled(CollisionBox_FUNC))
-		DrawCollisionBoxes();												//wyœwietlenie bry³ kolizji dla wszystkich obiektów w grze
-	if (IsFuncEnabled(InputProccesTime_FUNC))
-		ShowInputProccessTime();											//wyœwietlenie czasu przetwarzania sygna³ów wejœciowych
-	if (IsFuncEnabled(PhysicsProccesTime_FUNC))
-		ShowPhysicsProcessTime();											//wyœwietlenie czasu przetwarzania 'fizyki'  gry
-	if (IsFuncEnabled(GraphicsProccesTime_FUNC))
-		ShowGraphicsProccessTime();											//wyœwietlenie czasu przetwarzania grafiki
-	if (IsFuncEnabled(Timer_FUNC))
-		ShowTimer();*/
+	consoleFunVec.DisplayAll();
 }
 
 //wczytanie znaku do terminala
@@ -56,8 +37,7 @@ void CONSOLE::Insert(char a) {
 	if (a != 0x08 && a!=0x0A) {												//jeœli nie wczytanu znku 'BACKSPACE' lub 'ENTER'
 		if (currentTerminalText.size() < maxTerminaTextSize) {						//jeœli nie przekroczono maksymalnego zakresu terminala
 			//terminalText[terminalTextSize] = a;								//wczytaj nowy znak do terminala
-			currentTerminalText.push_back(a);
-			//currentTerminalTextSize++;													
+			currentTerminalText.push_back(a);													
 		}
 		else {
 			AddTerminalTextLine(currentTerminalText,TerminalTextStruct::USER);
@@ -68,15 +48,10 @@ void CONSOLE::Insert(char a) {
 			if (currentTerminalText.size() > 0) {										//jeœli istniej¹ znaki w terminalu
 				//terminalText[terminalTextSize - 1] = 0x00;					//usuñ ostatni znak
 				currentTerminalText.pop_back();
-				//currentTerminalTextSize--;
 			}
 		} 
 		if (a == 0x0A) {													//jeœli wczytano znak 'ENTER'
-			//for (unsigned int i = 0; i < terminalTextSize; i++)
-				//terminalCommand.push_back(terminalText[i]);					//wczytaj tekst z terminala do stringa komend
-
-			//CheckCommand();													//sprawdŸ wprowadzon¹ komendê
-			AddTerminalTextLine(currentTerminalText, TerminalTextStruct::USER);
+			ExecuteCommand();
 		}
 	}
 }
@@ -350,6 +325,33 @@ void CONSOLE::CountTextScreenParams() {
 	params.terminalScreenFontHeight = ((double)params.terminalFontSize / (double)WinAPIwindow::screenHeight)*2.0*params.textScreenHeight;
 }
 
+void CONSOLE::ExecuteCommand() {
+	lineAnalyzer.LoadLine(currentTerminalText, consoleFunVec);
+	LineAnalyzer::Errors errors = lineAnalyzer.GetErrors();
+	DisplayLineAnalyzerErrors(errors);
+	if (errors.semanticError == 0 && errors.typeError == 0)
+		DisplayFunErrors(consoleFunVec.GetFunError(lineAnalyzer.GetCommand()));
+	AddTerminalTextLine(currentTerminalText, TerminalTextStruct::USER);
+}
+
+void CONSOLE::DisplayLineAnalyzerErrors(LineAnalyzer::Errors& errors) {
+	if (errors.semanticError != 0) {
+		std::string errorMsg = "Semantic error code: " + std::to_string(errors.semanticError) + "; " + errors.semanticErrorMsg;
+		AddTerminalTextLine(errorMsg, TerminalTextStruct::SYSTEM);
+	}
+	if (errors.typeError != 0) {
+		std::string errorMsg = "Type error code: " + std::to_string(errors.semanticError) + "; " + errors.typeErrorMsg;
+		AddTerminalTextLine(errorMsg, TerminalTextStruct::SYSTEM);
+	}	
+}
+
+void CONSOLE::DisplayFunErrors(ConsoleFunError& funError) {
+	if (funError.code != 0) {
+		std::string errorMsg = "Function " + funError.fun + " error code: " + std::to_string(funError.code) + "; " + funError.msg;
+		AddTerminalTextLine(errorMsg, TerminalTextStruct::SYSTEM);
+	}
+}
+
 /*Vector CONSOLE::GetTextScreenPosition(alignment alin, unsigned int line) {
 	Vector move;
 	if (alin == LEFT) {
@@ -402,5 +404,5 @@ void CONSOLE::AddTerminalTextLine(std::string line,TerminalTextStruct::Source so
 		terminalTextLines.push_back(TerminalTextStruct(line,source_));
 	}
 
-	currentTerminalText = "";
+	if(source_==TerminalTextStruct::USER) currentTerminalText = "";
 }
