@@ -132,9 +132,9 @@ struct PreviousCommand :public ActionImpl {
 			int prevCommandIdx = *commandIdx;
 			do {
 				++(*commandIdx);
-				if (*(commandIdx) >= terminalLinesNum) (*commandIdx) = terminalLinesNum - 1;
+				if (static_cast<unsigned>(*commandIdx) >= terminalLinesNum) (*commandIdx) = terminalLinesNum - 1;
 				terminalLine = CONSOLE::GetTerminalText((*commandIdx));
-			} while (terminalLine.source != CONSOLE::TerminalTextStruct::USER && (*commandIdx) < terminalLinesNum);
+			} while (terminalLine.source != CONSOLE::TerminalTextStruct::USER && static_cast<unsigned>(*commandIdx) < terminalLinesNum);
 
 			if (terminalLine.line != "" && terminalLine.source==CONSOLE::TerminalTextStruct::USER) CONSOLE::SetCurrentTerminalText(terminalLine.line);
 			else *commandIdx = prevCommandIdx;

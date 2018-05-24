@@ -7,7 +7,7 @@ class ShowFPS :public ConsoleFunHandler<TYPELIST_1(int)> {
 	bool display;
 	double timeBuffer;
 	unsigned probes;
-	const unsigned maxProbes = 1000.0;
+	const unsigned maxProbes = 1000;
 
 	FONT font;
 	unsigned fontSize;

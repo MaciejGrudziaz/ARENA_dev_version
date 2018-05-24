@@ -58,7 +58,7 @@ void LineAnalyzer::GetParams(std::string line) {
 	std::string allParams;
 	allParams.append(line, pos + 1, endPos - pos - 1);
 
-	size_t prevPos;
+	size_t prevPos=0;
 	std::string paramStr;
 
 	pos = 0;
