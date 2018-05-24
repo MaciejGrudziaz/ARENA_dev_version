@@ -19,8 +19,9 @@ void GAMElogic::InitializeGameLogic() {
 	WeaponDatabase::Initialize();												//inicjalizacja bazy danych broni
 
 	CONSOLE::Initialize();														//inicjalizacja 'konsoli' gry
-	InitializeConsoleBasicFunctions();
 	GUI::Initialize();
+
+	InitializeConsoleBasicFunctions();
 }
 
 //ponowana inicjalizacja logiki gry [wykonywana w razie 'zniszczenia' okna gry]

@@ -266,7 +266,7 @@ void InitializeCameraInput() {
 	ActionsMODULE::RegisterInputModule(new PlayerInput("Camera"));
 	PhysicsMODULE::RegisterAdditionalActionsModules(mainCamActionsMod);
 
-	ActionsMODULE::GetActionsModule()->RegisterAction(new SetCameraFree(mainCam,"Camera"));
+	/*ActionsMODULE::GetActionsModule()->RegisterAction(new SetCameraFree(mainCam,"Camera"));
 	ActionsMODULE::GetActionsModule()->RegisterAction(new ResetCameraFree(ActionsMODULE::GetActionsModule()->Get("SetCameraFree")));
 
 	ActionsMODULE::RegisterInputSignal(new KeyboardInputSignal(KeyboardInputSignal::Code::RCTRL),
@@ -275,7 +275,7 @@ void InitializeCameraInput() {
 
 	ActionsMODULE::RegisterInputSignal(new KeyboardInputSignal(KeyboardInputSignal::Code::RCTRL),
 		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyUp),
-		new PlayerSignalHandler(ActionsMODULE::GetActionsModule(), "ResetCameraFree"));
+		new PlayerSignalHandler(ActionsMODULE::GetActionsModule(), "ResetCameraFree"));*/
 
 	mainCamActionsMod->RegisterAction(new CameraForwardAction(mainCam));
 	mainCamActionsMod->RegisterAction(new CameraBackwardAction(mainCam));

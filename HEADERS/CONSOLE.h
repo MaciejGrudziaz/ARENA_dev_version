@@ -65,6 +65,19 @@ private:
 	CONSOLE(const CONSOLE&) {}
 	CONSOLE& operator=(const CONSOLE&) {}
 
+	struct Prompt {
+		unsigned long time;
+		unsigned long promptTimeBreak;
+		bool show;
+		std::string activeSign;
+		std::string notActiveSign;
+		std::string sign;
+		Prompt() :time(0), activeSign("_"), notActiveSign(""), show(true), promptTimeBreak(500000) {}
+		void Update();
+	};
+
+	static Prompt prompt;
+
 	static bool status;
 
 	static ConsoleFunVec consoleFunVec;

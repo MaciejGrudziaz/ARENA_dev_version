@@ -32,7 +32,7 @@ struct Release_tilde :public ActionImpl {
 	}
 };
 
-struct SetCameraFree: public ActionImpl{
+/*struct SetCameraFree: public ActionImpl{
 	Camera* camera;
 	std::string cameraInputModuleName;
 	bool status;
@@ -64,4 +64,4 @@ struct ResetCameraFree :public ActionImpl {
 	void operator()() {
 		setCameraFree->status = true;
 	}
-};
+};*/

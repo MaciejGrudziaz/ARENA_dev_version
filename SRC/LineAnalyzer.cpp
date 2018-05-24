@@ -36,6 +36,7 @@ void LineAnalyzer::GetCommand(std::string line) {
 		if (line[i] != ' ') {
 			errors.semanticError = 4;
 			errors.semanticErrorMsg.append("Expected no signs after command!");
+			break;
 		}
 	}
 

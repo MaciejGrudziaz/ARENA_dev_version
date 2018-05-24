@@ -2,6 +2,7 @@
 
 //inicjalizacja statycznych sk³adowych klasy
 bool CONSOLE::status;
+CONSOLE::Prompt CONSOLE::prompt;
 ConsoleFunVec CONSOLE::consoleFunVec;
 LineAnalyzer CONSOLE::lineAnalyzer;
 Actions CONSOLE::actions;
@@ -147,8 +148,9 @@ Vector CONSOLE::GetTerminalBackgroundPosition() {
 //wyœwietlenie tekstu w terminalu
 void CONSOLE::TerminalText() {
 	Vector move = GetTerminalTextPosition(0);								//pobranie pozycji tekstu w terminalu
+	prompt.Update();
 
-	WriteTextOnScreen(move, ">> "+currentTerminalText, CONSOLE_white);
+	WriteTextOnScreen(move, ">> "+currentTerminalText+prompt.sign, CONSOLE_white);
 
 	unsigned terminalTextLinesCount = terminalTextLines.size();
 	unsigned linesToDisplay = maxTerminalLinesCount;
@@ -405,4 +407,14 @@ void CONSOLE::AddTerminalTextLine(std::string line,TerminalTextStruct::Source so
 	}
 
 	if(source_==TerminalTextStruct::USER) currentTerminalText = "";
+}
+
+void CONSOLE::Prompt::Update() {
+	time += TIMER::GetTime("FPS");
+	if (time > promptTimeBreak) {
+		show = !show;
+		time = 0;
+	}
+	if (show) sign = activeSign;
+	else sign = notActiveSign;
 }

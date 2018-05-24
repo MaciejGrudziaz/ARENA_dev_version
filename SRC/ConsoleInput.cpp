@@ -91,107 +91,33 @@ void ConsoleInput::Init() {
 	CONSOLE::GetActionsModule()->RegisterAction(new Press<'8','*'>(&delay, CONSOLE::GetActionsModule()->Get("PressRShift")));
 	CONSOLE::GetActionsModule()->RegisterAction(new Press<'9','('>(&delay,CONSOLE::GetActionsModule()->Get("PressRShift")));
 
+	CONSOLE::GetActionsModule()->RegisterAction(new Press < '.', '>'>(&delay, CONSOLE::GetActionsModule()->Get("PressRShift")));
+	CONSOLE::GetActionsModule()->RegisterAction(new Press < ',', '<'>(&delay, CONSOLE::GetActionsModule()->Get("PressRShift")));
+	CONSOLE::GetActionsModule()->RegisterAction(new Press<'\'', '"'>(&delay, CONSOLE::GetActionsModule()->Get("PressRShift")));
+	CONSOLE::GetActionsModule()->RegisterAction(new Press<'=', '+'>(&delay, CONSOLE::GetActionsModule()->Get("PressRShift")));
+	CONSOLE::GetActionsModule()->RegisterAction(new Press<'-', '_'>(&delay, CONSOLE::GetActionsModule()->Get("PressRShift")));
+
 	for (KeyboardInputCode& input : inputCodesVec) {
 		Register(new KeyboardInputSignal(input.code),
 			new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
 			new PlayerSignalHandler(CONSOLE::GetActionsModule(), input.sign));
 	}
 
-	/*Register(new KeyboardInputSignal(KeyboardInputSignal::Code::A),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "a"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::B),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "b"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::C),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "c"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::D),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "d"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::E),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "e"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::F),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "f"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::G),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "g"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::H),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "h"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::I),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "i"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::J),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "j"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::K),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "k"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::L),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "l"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::M),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "m"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::N),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "n"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::O),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "o"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::P),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "p"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::Q),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "q"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::R),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "r"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::S),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "s"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::T),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "t"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::U),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "u"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::V),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "v"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::W),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "w"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::X),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "x"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::Y),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "y"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::Z),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "z"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::_0),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "0"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::_1),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "1"));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::_9),
-		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
-		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "9"));*/
-
-
 	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::EQUALS),
 		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
 		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "="));
-	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::DECIMAL_POINT),
+	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::PERIOD),
 		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
 		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "."));
+	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::COMMA),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(CONSOLE::GetActionsModule(), ","));
+	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::APOSTROPHE),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "'"));
+	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::MINUS),
+		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
+		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "-"));
 	Register(new KeyboardInputSignal(KeyboardInputSignal::Code::BACKSPACE),
 		new InputFunHandler<KeyboardImpl>(GAMEINPUT::GetKeyboard(), &KeyboardImpl::KeyDown),
 		new PlayerSignalHandler(CONSOLE::GetActionsModule(), "Backspace"));
